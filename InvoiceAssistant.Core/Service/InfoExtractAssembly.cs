@@ -1,36 +1,15 @@
 using System.Text.Json;
 using InvoiceAssistant.Core.Data;
 using InvoiceAssistant.Core.Service.Extractors;
-using InvoiceAssistant.Core.Service.Processors;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace InvoiceAssistant.Core.Service;
 
-public class InfoExtractAssembly : IDisposable
+public class InfoExtractAssembly(ILogger<InfoExtractAssembly> logger,
+ IServiceProvider serviceProvider) : IInfoExtractAssembly
 {
-    PdfProcessor pdfProcessor;
-    private List<IInfoExtractor> PdfExtractors { get; set; }
-    private List<IInfoExtractor> ImgExtractors { get; set; }
-    public InfoExtractAssembly()
-    {
-        pdfProcessor = new PdfProcessor();
-        PdfExtractors = [
-            // new TrainInvoiceInfoExtractor(),
-            new PdfWithTextPositionExtractor(),
-            new PdfToImageWithTextPositionExtractor(),
-            new PdfOnlyTextExtractor()
-        ];
-        ImgExtractors =
-        [
-            new ImageOnlyTextExtractor(),
-            new ImageWithTextPositionExtractor()
-        ];
-        ImgExtractors.Concat(PdfExtractors).ToList().ForEach(t =>
-        {
-            t.PdfEngine = pdfProcessor;
-        });
-    }
-
-    public IEnumerable<ProcessConfig> GetProcessConfigs(string dir)
+    public async Task<IEnumerable<ProcessConfig>> GetProcessConfigs(string dir)
     {
         List<ProcessConfig> ret = [];
         var files = Directory.EnumerateFiles(dir);
@@ -38,58 +17,74 @@ public class InfoExtractAssembly : IDisposable
         {
             try
             {
-                var txt = File.ReadAllText(file);
+                var txt = await File.ReadAllTextAsync(file);
                 var cfg = JsonSerializer.Deserialize<ProcessConfig>(txt);
                 if (cfg == null
                 || string.IsNullOrWhiteSpace(cfg.Title)
                 || cfg.Matcher == null
                 || cfg.ProcessValue == ProcessType.UnKnown)
                 {
-                    Console.WriteLine("%s为正确配置，Title、Matcher、ProcessValue为必填。", file);
+                    logger.LogWarning("{}未正确配置，Title、Matcher、ProcessValue为必填。", file);
                     continue;
                 }
                 ret.Add(cfg);
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex);
+                logger.LogError("{}", ex);
             }
         }
         return ret;
     }
-    public InvoiceInfo? Extract(string dir)
+    public async Task<IEnumerable<InvoiceInfo>> Extract(string dir, IEnumerable<ProcessConfig> cfgs)
     {
         var files = Directory.EnumerateFiles(dir);
-        var cfgs = GetProcessConfigs("../../../../config/process");
+        var extractors = serviceProvider.GetServices<IInfoExtractor>();
+        var imgs = extractors.Where(t => t.GetType().Name.StartsWith("Image")).ToList();
+        var pdfs = extractors.Where(t => t.GetType().Name.StartsWith("Pdf")).ToList();
+        List<InvoiceInfo> ret = [];
         foreach (var item in files)
         {
-            InvoiceInfo? ret = null;
+            InvoiceInfo? info = null;
             var lc = item.ToLower();
             if (lc.EndsWith(".png") || lc.EndsWith(".jpg") || lc.EndsWith(".bmp"))
             {
-                ret = Match(item, ImgExtractors, cfgs);
-                if (ret != null) continue;
+                info = await Match(item, imgs, cfgs);
             }
             else if (lc.EndsWith(".pdf"))
             {
-                ret = Match(item, PdfExtractors, cfgs);
-                if (ret != null) continue;
+                info = await Match(item, pdfs, cfgs);
             }
-            Console.WriteLine(item);
-            if (ret != null)
+            else
             {
-                ret.FilePath = item;
+                logger.LogInformation("跳过处理：{}", item);
+                continue;
+            }
+            logger.LogInformation("结束处理：{}", item);
+            if (info != null)
+            {
+                info.FilePath = item;
+                ret.Add(info);
             }
         }
-        return null;
+        return ret;
     }
-    InvoiceInfo? Match(string fp, IEnumerable<IInfoExtractor> extractors, IEnumerable<ProcessConfig> configs)
+    async Task<InvoiceInfo?> Match(string fp, IEnumerable<IInfoExtractor> extractors, IEnumerable<ProcessConfig> configs)
     {
-        foreach (var extractor in extractors)
+
+        foreach (var config in configs)
         {
-            var ret = configs.Select(t => extractor.GetInfo(fp, t)).FirstOrDefault(t => t != null);
-            if (ret != null) return ret;
+            var extractor = extractors.FirstOrDefault(t => t.ProcessType == config.ProcessValue);
+            if (extractor == null)
+            {
+                // logger.LogWarning("配置{}未找到执行者{}", config.Title, config.ProcessValue);
+                continue;
+            }
+            var ret = await extractor.GetInfo(fp, config);
+            if (ret != null)
+                return ret;
         }
+
         return null;
     }
     public void Dispose()

@@ -2,25 +2,23 @@
 using Docnet.Core.Models;
 using Docnet.Core.Readers;
 using Ghostscript.NET.Rasterizer;
+using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
 namespace InvoiceAssistant.Core.Service.Processors;
 
-public class PdfProcessor : IDisposable
+public class PdfProcessor(ILogger<PdfProcessor> logger) : IPdfProcessor
 {
-    protected IDocLib DocNet { get; }
+    private readonly ILogger<PdfProcessor> logger = logger;
 
-    public PdfProcessor()
-    {
-        DocNet = DocLib.Instance;
-    }
+    protected IDocLib DocNet { get; } = DocLib.Instance;
 
     public void Dispose()
     {
         DocNet.Dispose();
     }
 
-    public List<SKBitmap> ExtractImages(string filePath, int dpi = 300)
+    public async Task<List<SKBitmap>> ExtractImages(string filePath, int dpi = 300)
     {
         var ret = new List<SKBitmap>();
         // 创建 Rasterizer 实例
@@ -51,12 +49,12 @@ public class PdfProcessor : IDisposable
             using var pageReader = docReader.GetPageReader(i);
             pageReader.GetImage();
             var text = pageReader.GetImage();
-            Console.WriteLine(text);
+            // logger.LogInformation(text);
             ret.Add(text);
         }
         return ret;
     }
-    public List<string> ExtractText(string filePath)
+    public async Task<List<string>> ExtractText(string filePath)
     {
         using var docReader = DocNet.GetDocReader(filePath, new PageDimensions(1));
         var count = docReader.GetPageCount();
@@ -65,12 +63,12 @@ public class PdfProcessor : IDisposable
         {
             using var pageReader = docReader.GetPageReader(i);
             var text = pageReader.GetText();
-            // Console.WriteLine(text);
+            //  logger.LogInformation(text);
             ret.Add(text);
         }
         return ret;
     }
-    public void ForeachPdfPage(string filePath, Action<IPageReader> action)
+    public async Task ForeachPdfPage(string filePath, Action<IPageReader> action)
     {
         using var docReader = DocNet.GetDocReader(filePath, new PageDimensions(1));
         var count = docReader.GetPageCount();
@@ -81,7 +79,7 @@ public class PdfProcessor : IDisposable
             // var characters = pageReader.GetCharacters();
             // foreach (var character in characters)
             // {
-            //     Console.WriteLine($"{character.Char} {character.Box.Left} {character.Box.Top} {character.Box.Right} {character.Box.Bottom}");
+            //     logger.LogDebug($"{character.Char} {character.Box.Left} {character.Box.Top} {character.Box.Right} {character.Box.Bottom}");
             // }
             action(pageReader);
         }

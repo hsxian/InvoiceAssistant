@@ -1,6 +1,6 @@
 {
   "Title": "火车票",
-  "ProcessValue": 1,
+  "ProcessValue": "PdfWithTextPosition",
   "Matcher": {
     "RegexPattern": "铁路|电子客票",
     "Left": 180,
@@ -12,7 +12,7 @@
   },
   "Xtractors": [
     {
-      "RegexPattern": "^([\\u4e00-\\u9fa5]\u002B)站",
+      "RegexPattern": "^([\\u4e00-\\u9fa5]+)站",
       "Left": 90,
       "Top": 80,
       "Right": 190,
@@ -26,7 +26,7 @@
       ]
     },
     {
-      "RegexPattern": "^([\\u4e00-\\u9fa5]\u002B)站",
+      "RegexPattern": "^([\\u4e00-\\u9fa5]+)站",
       "Left": 390,
       "Top": 80,
       "Right": 490,
@@ -54,7 +54,7 @@
       ]
     },
     {
-      "RegexPattern": "(\\d\u002B\\.\\d{2})",
+      "RegexPattern": "(\\d+\\.\\d{2})",
       "Left": 20,
       "Top": 160,
       "Right": 130,

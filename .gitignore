@@ -10,6 +10,8 @@ temp/*
 logs/
 nohup.*
 tessdata/
+*.png
+appsettings.De*.json
 
 # User-specific files
 *.suo

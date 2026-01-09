@@ -1,6 +1,6 @@
 {
   "Title": "机票",
-  "ProcessValue": 1,
+  "ProcessValue": "PdfWithTextPosition",
   "Matcher": {
     "RegexPattern": "航空|民航|行程单",
     "Left": 200,
@@ -40,7 +40,7 @@
       ]
     },
     {
-      "RegexPattern": "(\\d\u002B\\.\\d{2})",
+      "RegexPattern": "(\\d+\\.\\d{2})",
       "Left": 520,
       "Top": 235,
       "Right": 610,

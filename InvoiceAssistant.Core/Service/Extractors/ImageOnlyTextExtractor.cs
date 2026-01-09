@@ -1,15 +1,12 @@
-using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Unicode;
 using InvoiceAssistant.Core.Data;
 using InvoiceAssistant.Core.Service.Processors;
-using Tesseract;
+using Microsoft.Extensions.Logging;
 
 namespace InvoiceAssistant.Core.Service.Extractors;
 
-public class ImageOnlyTextExtractor : IInfoExtractor
+public class ImageOnlyTextExtractor(ILogger<ImageOnlyTextExtractor> logger,
+ IInfoExtractUnit extractUnit) : IInfoExtractor
 {
-    public PdfProcessor? PdfEngine { get; set; }
 
     public void Dispose()
     {
@@ -17,12 +14,15 @@ public class ImageOnlyTextExtractor : IInfoExtractor
     }
 
 
-    public InvoiceInfo? GetInfo(string filePath, ProcessConfig processConfig)
+    public async Task<InvoiceInfo?> GetInfo(string filePath, ProcessConfig processConfig)
     {
-        Console.WriteLine(nameof(ImageOnlyTextExtractor) + " " + nameof(GetInfo));
-        var ieu = new InfoExtractUnit();
-        InvoiceInfo? ret = ieu.ExtractByImgOnlyText(filePath, processConfig);
+        if (processConfig.ProcessValue != ProcessType) return null;
+        logger.LogInformation("开始执行");
+        InvoiceInfo? ret = await extractUnit.ExtractByImgOnlyText(filePath, processConfig);
         processConfig.CopyTo(ret);
+        logger.LogInformation("结束执行");
         return ret;
     }
+
+    public ProcessType ProcessType => ProcessType.ImageOnlyText;
 }

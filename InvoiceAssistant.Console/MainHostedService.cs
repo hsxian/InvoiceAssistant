@@ -1,15 +1,24 @@
-﻿// See https://aka.ms/new-console-template for more information
-using InvoiceAssistant.Core;
-using Microsoft.Extensions.DependencyInjection;
+// See https://aka.ms/new-console-template for more information
+using InvoiceAssistant.Core.Service;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
-Console.WriteLine("Hello, World!");
+class MainHostedService(IInfoExtractAssembly infoExtractAssembly,
+IConfiguration configuration) : IHostedService
+{
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        var pch = configuration.GetSection("ProcessConfigurationHome").Get<string>()!;
+        var rfh = configuration.GetSection("RawFilesHome").Get<string>()!;
+        var configs = await infoExtractAssembly.GetProcessConfigs(pch);
+        var infos = await infoExtractAssembly.Extract(rfh, configs);
+    }
 
-HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
-builder.Services.ConfigInvoiceAssistantCore()
-.AddHostedService<MainHostedService>();
-IHost host = builder.Build();
-host.Run();
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+
+    }
+}
 // var dir = "/2/";
 
 // var pdfProcessor = new PdfProcessor();

@@ -1,6 +1,6 @@
 {
   "Title": "机票申请截图",
-  "ProcessValue": 3,
+  "ProcessValue": "ImageOnlyText",
   "Matcher": {
     "RegexPattern": "申请.*\n*.*机票",
     "Left": 0,
