@@ -12,7 +12,7 @@ namespace InvoiceAssistant.Core.Service;
 public class InfoExtractUnit
 {
     private void SetValue(InvoiceInfo ret, PropertyInfo[] props, Match match,
-   IEnumerable<RegexMapToPropertyMetadata> regexMapToProperties)
+        IEnumerable<RegexMapToPropertyMetadata> regexMapToProperties)
     {
         foreach (var item in regexMapToProperties!)
         {
@@ -39,23 +39,26 @@ public class InfoExtractUnit
             prop.SetValue(obj, d);
         }
     }
-    public InvoiceInfo? ExtractByPdfOnlyText(PdfProcessor pdfProcessor, string filePath, string matcherPattern, List<ExtractMetadata> xtractors)
+    public InvoiceInfo? ExtractByPdfOnlyText(PdfProcessor pdfProcessor, string filePath, ProcessConfig processConfig)
     {
         InvoiceInfo? ret = null;
         pdfProcessor.ForeachPdfPage(filePath, page =>
         {
             var txt = page.GetText();
-            if (!Regex.Match(txt, matcherPattern).Success)
+            if (!Regex.Match(txt, processConfig.Matcher!.RegexPattern!).Success)
             {
                 return;
             }
             ret = new InvoiceInfo();
             var props = typeof(InvoiceInfo).GetProperties();
-            foreach (var xtractor in xtractors)
+            if (processConfig.Xtractors != null)
             {
-                var match = Regex.Match(txt, xtractor.RegexPattern!);
-                if (!match.Success) continue;
-                SetValue(ret, props, match, xtractor.RegexMapToProperties!);
+                foreach (var xtractor in processConfig.Xtractors)
+                {
+                    var match = Regex.Match(txt, xtractor.RegexPattern!);
+                    if (!match.Success) continue;
+                    SetValue(ret, props, match, xtractor.RegexMapToProperties!);
+                }
             }
         });
         return ret;
@@ -70,51 +73,57 @@ public class InfoExtractUnit
         var txt = pdfProcessor.GetText(characters, box).ReplaceLineEndings("").Trim();
         return txt;
     }
-    public InvoiceInfo? ExtractByPdf(PdfProcessor pdfProcessor, string filePath, ExtractMetadata matcher, List<ExtractMetadata> xtractors)
+    public InvoiceInfo? ExtractByPdf(PdfProcessor pdfProcessor, string filePath, ProcessConfig processConfig)
     {
         InvoiceInfo? ret = null;
         pdfProcessor.ForeachPdfPage(filePath, page =>
         {
             var characters = page.GetCharacters();
 
-            var txt = GetTxtByPdf(pdfProcessor, characters, page.GetPageWidth(), page.GetPageHeight(), matcher);
-            Console.WriteLine($"{matcher.RegexPattern} -> {txt}");
-            var match = Regex.Match(txt, matcher.RegexPattern!);
+            var txt = GetTxtByPdf(pdfProcessor, characters, page.GetPageWidth(), page.GetPageHeight(), processConfig.Matcher!);
+            Console.WriteLine($"{processConfig.Matcher!.RegexPattern} -> {txt}");
+            var match = Regex.Match(txt, processConfig.Matcher!.RegexPattern!);
             if (!match.Success)
             {
                 return;
             }
             ret = new InvoiceInfo();
             var props = typeof(InvoiceInfo).GetProperties();
-            foreach (var xtractor in xtractors)
+            if (processConfig.Xtractors != null)
             {
-                txt = GetTxtByPdf(pdfProcessor, characters, page.GetPageWidth(), page.GetPageHeight(), xtractor);
-                Console.WriteLine($"{xtractor.RegexPattern} -> {txt}");
-                match = Regex.Match(txt, xtractor.RegexPattern!);
-                if (!match.Success) continue;
-                SetValue(ret, props, match, xtractor.RegexMapToProperties!);
+                foreach (var xtractor in processConfig.Xtractors)
+                {
+                    txt = GetTxtByPdf(pdfProcessor, characters, page.GetPageWidth(), page.GetPageHeight(), xtractor);
+                    Console.WriteLine($"{xtractor.RegexPattern} -> {txt}");
+                    match = Regex.Match(txt, xtractor.RegexPattern!);
+                    if (!match.Success) continue;
+                    SetValue(ret, props, match, xtractor.RegexMapToProperties!);
+                }
             }
         });
         return ret;
     }
-    public InvoiceInfo? ExtractByImgOnlyText(string filePath, string matcherPattern, List<ExtractMetadata> xtractors)
+    public InvoiceInfo? ExtractByImgOnlyText(string filePath, ProcessConfig processConfig)
     {
         InvoiceInfo? ret = null;
         using var engie = new TesseractEngine("tessdata", "chi_sim", EngineMode.Default);
         using var pix = Pix.LoadFromFile(filePath);
         using var gray = pix.ConvertRGBToGray();
         var txt = engie.Process(gray, PageSegMode.SparseText).GetText().Replace(" ", "");
-        if (!Regex.Match(txt, matcherPattern).Success)
+        if (!Regex.Match(txt, processConfig.Matcher!.RegexPattern!).Success)
         {
             return ret;
         }
         ret = new InvoiceInfo();
         var props = typeof(InvoiceInfo).GetProperties();
-        foreach (var xtractor in xtractors)
+        if (processConfig.Xtractors != null)
         {
-            var match = Regex.Match(txt, xtractor.RegexPattern!);
-            if (!match.Success) continue;
-            SetValue(ret, props, match, xtractor.RegexMapToProperties!);
+            foreach (var xtractor in processConfig.Xtractors)
+            {
+                var match = Regex.Match(txt, xtractor.RegexPattern!);
+                if (!match.Success) continue;
+                SetValue(ret, props, match, xtractor.RegexMapToProperties!);
+            }
         }
         return ret;
     }
@@ -142,32 +151,35 @@ public class InfoExtractUnit
         using var page = engie.Process(pix, rect);
         return page.GetText().Replace(" ", "").Trim();
     }
-    public InvoiceInfo? ExtractByImg(string filePath, ExtractMetadata matcher, List<ExtractMetadata> xtractors)
+    public InvoiceInfo? ExtractByImg(string filePath, ProcessConfig processConfig)
     {
         using var pix = Pix.LoadFromFile(filePath);
-        return ExtractByImg(pix, matcher, xtractors);
+        return ExtractByImg(pix, processConfig);
     }
-    public InvoiceInfo? ExtractByImg(Pix pix, ExtractMetadata matcher, List<ExtractMetadata> xtractors)
+    public InvoiceInfo? ExtractByImg(Pix pix, ProcessConfig processConfig)
     {
         using var engie = new TesseractEngine("tessdata", "chi_sim", EngineMode.Default);
         InvoiceInfo? ret = null;
         using var gray = pix.ConvertRGBToGray();
-        var txt = GetTxtByImg(engie, gray, matcher);
-        Console.WriteLine($"{matcher.RegexPattern} -> {txt}");
-        if (string.IsNullOrWhiteSpace(txt) || !Regex.Match(txt, matcher.RegexPattern!).Success)
+        var txt = GetTxtByImg(engie, gray, processConfig.Matcher!);
+        Console.WriteLine($"{processConfig.Matcher!.RegexPattern} -> {txt}");
+        if (string.IsNullOrWhiteSpace(txt) || !Regex.Match(txt, processConfig.Matcher!.RegexPattern!).Success)
         {
             return ret;
         }
         ret = new InvoiceInfo();
         var props = typeof(InvoiceInfo).GetProperties();
-        foreach (var xtractor in xtractors)
+        if (processConfig.Xtractors != null)
         {
-            txt = GetTxtByImg(engie, gray, xtractor);
-            Console.WriteLine($"{xtractor.RegexPattern} -> {txt}");
-            if (string.IsNullOrWhiteSpace(txt)) continue;
-            var match = Regex.Match(txt, xtractor.RegexPattern!);
-            if (!match.Success) continue;
-            SetValue(ret, props, match, xtractor.RegexMapToProperties!);
+            foreach (var xtractor in processConfig.Xtractors)
+            {
+                txt = GetTxtByImg(engie, gray, xtractor);
+                Console.WriteLine($"{xtractor.RegexPattern} -> {txt}");
+                if (string.IsNullOrWhiteSpace(txt)) continue;
+                var match = Regex.Match(txt, xtractor.RegexPattern!);
+                if (!match.Success) continue;
+                SetValue(ret, props, match, xtractor.RegexMapToProperties!);
+            }
         }
         return ret;
     }

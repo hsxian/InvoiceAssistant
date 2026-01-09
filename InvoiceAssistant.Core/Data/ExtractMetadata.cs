@@ -1,6 +1,3 @@
-using System.Text.Json;
-using System.Text.RegularExpressions;
-
 namespace InvoiceAssistant.Core.Data;
 
 public class RegexMapToPropertyMetadata(int groupsIndex, string? propertyName)

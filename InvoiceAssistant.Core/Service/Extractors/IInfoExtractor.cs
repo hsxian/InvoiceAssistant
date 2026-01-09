@@ -7,6 +7,5 @@ namespace InvoiceAssistant.Core.Service.Extractors;
 public interface IInfoExtractor : IDisposable
 {
     PdfProcessor? PdfEngine { get; set; }
-    FileInfoTypeBag InfoBag { get; }
-    InvoiceInfo? GetInfo(string filePath);
+    InvoiceInfo? GetInfo(string filePath, ProcessConfig processConfig);
 }

@@ -1,0 +1,71 @@
+{
+  "Title": "火车票",
+  "ProcessValue": 1,
+  "Matcher": {
+    "RegexPattern": "铁路|电子客票",
+    "Left": 180,
+    "Top": 15,
+    "Right": 410,
+    "Bottom": 40,
+    "ScaleOrAbsolutePosition": false,
+    "RegexMapToProperties": null
+  },
+  "Xtractors": [
+    {
+      "RegexPattern": "^([\\u4e00-\\u9fa5]\u002B)站",
+      "Left": 90,
+      "Top": 80,
+      "Right": 190,
+      "Bottom": 100,
+      "ScaleOrAbsolutePosition": false,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "Origin"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "^([\\u4e00-\\u9fa5]\u002B)站",
+      "Left": 390,
+      "Top": 80,
+      "Right": 490,
+      "Bottom": 100,
+      "ScaleOrAbsolutePosition": false,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "Destination"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "(\\d{4}年\\d{2}月\\d{2}日\\s*\\d{1,2}:\\d{2})开",
+      "Left": 20,
+      "Top": 130,
+      "Right": 160,
+      "Bottom": 150,
+      "ScaleOrAbsolutePosition": false,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "StartTime"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "(\\d\u002B\\.\\d{2})",
+      "Left": 20,
+      "Top": 160,
+      "Right": 130,
+      "Bottom": 180,
+      "ScaleOrAbsolutePosition": false,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "TicketPrice"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "Title": "机票",
+  "ProcessValue": 1,
+  "Matcher": {
+    "RegexPattern": "航空|民航|行程单",
+    "Left": 200,
+    "Top": 40,
+    "Right": 430,
+    "Bottom": 60,
+    "ScaleOrAbsolutePosition": false,
+    "RegexMapToProperties": null
+  },
+  "Xtractors": [
+    {
+      "RegexPattern": "^自：([\\u4e00-\\u9fa5]{1,3}) ",
+      "Left": 40,
+      "Top": 150,
+      "Right": 170,
+      "Bottom": 161,
+      "ScaleOrAbsolutePosition": false,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "Origin"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "(\\d{4}年\\d{2}月\\d{2}日 *\\d{2}:\\d{2})",
+      "Left": 270,
+      "Top": 150,
+      "Right": 350,
+      "Bottom": 161,
+      "ScaleOrAbsolutePosition": false,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "StartTime"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "(\\d\u002B\\.\\d{2})",
+      "Left": 520,
+      "Top": 235,
+      "Right": 610,
+      "Bottom": 260,
+      "ScaleOrAbsolutePosition": false,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "TicketPrice"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "^至：([\\u4e00-\\u9fa5]{1,3}) ",
+      "Left": 40,
+      "Top": 150,
+      "Right": 170,
+      "Bottom": 161,
+      "ScaleOrAbsolutePosition": false,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "Destination"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "^至：([\\u4e00-\\u9fa5]{1,3}) ",
+      "Left": 40,
+      "Top": 175,
+      "Right": 170,
+      "Bottom": 186,
+      "ScaleOrAbsolutePosition": false,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "Destination"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "^至：([\\u4e00-\\u9fa5]{1,3}) ",
+      "Left": 40,
+      "Top": 200,
+      "Right": 170,
+      "Bottom": 211,
+      "ScaleOrAbsolutePosition": false,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "Destination"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "^至：([\\u4e00-\\u9fa5]{1,3}) ",
+      "Left": 40,
+      "Top": 225,
+      "Right": 170,
+      "Bottom": 236,
+      "ScaleOrAbsolutePosition": false,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "Destination"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "^至：([\\u4e00-\\u9fa5]{1,3}) ",
+      "Left": 40,
+      "Top": 250,
+      "Right": 170,
+      "Bottom": 261,
+      "ScaleOrAbsolutePosition": false,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "Destination"
+        }
+      ]
+    }
+  ]
+}

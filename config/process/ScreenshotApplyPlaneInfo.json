@@ -1,0 +1,14 @@
+{
+  "Title": "机票申请截图",
+  "ProcessValue": 3,
+  "Matcher": {
+    "RegexPattern": "申请.*\n*.*机票",
+    "Left": 0,
+    "Top": 0,
+    "Right": 0,
+    "Bottom": 0,
+    "ScaleOrAbsolutePosition": true,
+    "RegexMapToProperties": null
+  },
+  "Xtractors": []
+}

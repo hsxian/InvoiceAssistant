@@ -2,8 +2,10 @@ namespace InvoiceAssistant.Core.Data;
 
 public enum ProcessType
 {
+    UnKnown,
     PdfOnlyText,
     PdfWithTextPosition,
-    PdfToImage,
-    Image,
+    PdfToImageWithTextPosition,
+    ImageOnlyText,
+    ImageWithTextPosition,
 }
