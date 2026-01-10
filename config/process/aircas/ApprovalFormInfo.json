@@ -1,6 +1,7 @@
 {
   "Title": "出差审批单",
   "ProcessValue": "PdfToImageWithTextPosition",
+  "GroupFlag": true,
   "Matcher": {
     "RegexPattern": "出差审批单",
     "Left": 0.4,

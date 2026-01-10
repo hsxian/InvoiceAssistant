@@ -4,6 +4,7 @@ public class RegexMapToPropertyMetadata(int groupsIndex, string? propertyName)
 {
     public int GroupsIndex { get; set; } = groupsIndex;
     public string? PropertyName { get; set; } = propertyName;
+    public string? Format { get; set; }
 }
 public class ExtractMetadata
 {
@@ -12,6 +13,7 @@ public class ExtractMetadata
     public float Top { get; set; }
     public float Right { get; set; }
     public float Bottom { get; set; }
+    public bool? Enable { get; set; }
     public bool ScaleOrAbsolutePosition { get; set; } = true;
     public List<RegexMapToPropertyMetadata>? RegexMapToProperties { get; set; }
 

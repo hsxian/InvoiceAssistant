@@ -12,6 +12,8 @@ public static class ServicesConfig
     {
         service.AddScoped<IInfoExtractUnit, InfoExtractUnit>();
         service.AddScoped<IInfoExtractAssembly, InfoExtractAssembly>();
+        service.AddScoped<IRenameProcessor, RenameProcessor>();
+        service.AddScoped<IImageProcessor, ImageProcessor>();
         service.AddSingleton<IPdfProcessor, PdfProcessor>();
         service.AddTransient<IInfoExtractor, ImageOnlyTextExtractor>();
         service.AddTransient<IInfoExtractor, ImageWithTextPositionExtractor>();

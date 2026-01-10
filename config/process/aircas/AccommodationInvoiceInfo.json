@@ -1,0 +1,72 @@
+{
+  "Title": "住宿发票",
+  "ProcessValue": "PdfWithTextPosition",
+  "Matcher": {
+    "RegexPattern": "住宿",
+    "Left": 10,
+    "Top": 160,
+    "Right": 80,
+    "Bottom": 170,
+    "ScaleOrAbsolutePosition": false,
+    "RegexMapToProperties": null
+  },
+  "Xtractors": [
+    {
+      "RegexPattern": "名称： *([\\u4e00-\\u9fa5]+)",
+      "Left": 310,
+      "Top": 90,
+      "Right": 580,
+      "Bottom": 110,
+      "ScaleOrAbsolutePosition": false,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "Origin"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "名称： *([\\u4e00-\\u9fa5]+)",
+      "Left": 30,
+      "Top": 90,
+      "Right": 290,
+      "Bottom": 110,
+      "ScaleOrAbsolutePosition": false,
+      "Enable": false,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "Destination"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "开票日期：(\\d{4}年\\d{2}月\\d{2}日)",
+      "Left": 430,
+      "Top": 45,
+      "Right": 550,
+      "Bottom": 60,
+      "ScaleOrAbsolutePosition": false,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "StartTime"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "¥(\\d+\\.\\d{2})",
+      "Left": 410,
+      "Top": 280,
+      "Right": 500,
+      "Bottom": 290,
+      "ScaleOrAbsolutePosition": false,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "TicketPrice"
+        }
+      ]
+    }
+  ]
+}

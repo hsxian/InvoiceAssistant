@@ -2,7 +2,7 @@
   "Title": "机票申请截图",
   "ProcessValue": "ImageOnlyText",
   "Matcher": {
-    "RegexPattern": "申请.*\n*.*机票",
+    "RegexPattern": "申请[\\s\\S]*机票",
     "Left": 0,
     "Top": 0,
     "Right": 0,
@@ -10,5 +10,46 @@
     "ScaleOrAbsolutePosition": true,
     "RegexMapToProperties": null
   },
-  "Xtractors": []
+  "Xtractors": [
+    {
+      "RegexPattern": "(\\d{1}月\\d{1}号)",
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 0,
+          "PropertyName": "StartTime",
+          "Format": "M月d号"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "(\\d{1}月\\d{2}号)",
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 0,
+          "PropertyName": "StartTime",
+          "Format": "M月dd号"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "(\\d{2}月\\d{1}号)",
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 0,
+          "PropertyName": "StartTime",
+          "Format": "MM月d号"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "(\\d{2}月\\d{2}号)",
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 0,
+          "PropertyName": "StartTime",
+          "Format": "MM月dd号"
+        }
+      ]
+    }
+  ]
 }

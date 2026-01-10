@@ -1,17 +1,23 @@
 // See https://aka.ms/new-console-template for more information
 using InvoiceAssistant.Core.Service;
+using InvoiceAssistant.Core.Service.Processors;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 class MainHostedService(IInfoExtractAssembly infoExtractAssembly,
+IRenameProcessor renameProcessor,
 IConfiguration configuration) : IHostedService
 {
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         var pch = configuration.GetSection("ProcessConfigurationHome").Get<string>()!;
         var rfh = configuration.GetSection("RawFilesHome").Get<string>()!;
+        infoExtractAssembly.PdfExtensions = configuration.GetSection("PdfExtensions").Get<List<string>>()!;
+        infoExtractAssembly.ImageExtensions = configuration.GetSection("ImageExtensions").Get<List<string>>()!;
+        RenameProcessor.InvoiceOwner = configuration.GetSection("InvoiceOwner").Get<string>()!;
         var configs = await infoExtractAssembly.GetProcessConfigs(pch);
         var infos = await infoExtractAssembly.Extract(rfh, configs);
+        renameProcessor.TryGroup(infos);
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)

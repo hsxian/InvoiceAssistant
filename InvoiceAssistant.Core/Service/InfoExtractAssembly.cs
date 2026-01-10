@@ -1,6 +1,7 @@
 using System.Text.Json;
 using InvoiceAssistant.Core.Data;
 using InvoiceAssistant.Core.Service.Extractors;
+using InvoiceAssistant.Core.Service.Processors;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -9,6 +10,9 @@ namespace InvoiceAssistant.Core.Service;
 public class InfoExtractAssembly(ILogger<InfoExtractAssembly> logger,
  IServiceProvider serviceProvider) : IInfoExtractAssembly
 {
+    public List<string> PdfExtensions { get; set; } = [".pdf"];
+    public List<string> ImageExtensions { get; set; } = [".png"];
+
     public async Task<IEnumerable<ProcessConfig>> GetProcessConfigs(string dir)
     {
         List<ProcessConfig> ret = [];
@@ -45,13 +49,19 @@ public class InfoExtractAssembly(ILogger<InfoExtractAssembly> logger,
         List<InvoiceInfo> ret = [];
         foreach (var item in files)
         {
+            if (RenameProcessor.InvoiceOwner != null &&
+            Path.GetFileNameWithoutExtension(item).Contains(RenameProcessor.InvoiceOwner))
+            {
+                logger.LogInformation("因文件“{}”包含InvoiceOwner“{}”，视为处理过，将忽略。", item, RenameProcessor.InvoiceOwner);
+                continue;
+            }
             InvoiceInfo? info = null;
             var lc = item.ToLower();
-            if (lc.EndsWith(".png") || lc.EndsWith(".jpg") || lc.EndsWith(".bmp"))
+            if (ImageExtensions.Any(lc.EndsWith))
             {
                 info = await Match(item, imgs, cfgs);
             }
-            else if (lc.EndsWith(".pdf"))
+            else if (PdfExtensions.Any(lc.EndsWith))
             {
                 info = await Match(item, pdfs, cfgs);
             }

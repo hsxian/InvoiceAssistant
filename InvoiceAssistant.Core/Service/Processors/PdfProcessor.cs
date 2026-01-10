@@ -76,11 +76,11 @@ public class PdfProcessor(ILogger<PdfProcessor> logger) : IPdfProcessor
         for (int i = 0; i < count; i++)
         {
             using var pageReader = docReader.GetPageReader(i);
-            // var characters = pageReader.GetCharacters();
-            // foreach (var character in characters)
-            // {
-            //     logger.LogDebug($"{character.Char} {character.Box.Left} {character.Box.Top} {character.Box.Right} {character.Box.Bottom}");
-            // }
+            var characters = pageReader.GetCharacters();
+            foreach (var character in characters)
+            {
+                Console.WriteLine($"{character.Char} {character.Box.Left} {character.Box.Top} {character.Box.Right} {character.Box.Bottom}");
+            }
             action(pageReader);
         }
     }

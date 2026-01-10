@@ -1,0 +1,87 @@
+{
+  "Title": "支付截图",
+  "ProcessValue": "ImageWithTextPosition",
+  "Matcher": {
+    "RegexPattern": "明细详情",
+    "Left": 0.25,
+    "Top": 0,
+    "Right": 0.75,
+    "Bottom": 0.05,
+    "ScaleOrAbsolutePosition": true,
+    "RegexMapToProperties": null
+  },
+  "Xtractors": [
+    {
+      "RegexPattern": "-(\\d+\\.\\d{2})",
+      "Left": 0.245,
+      "Top": 0.1,
+      "Right": 0.755,
+      "Bottom": 0.155,
+      "ScaleOrAbsolutePosition": true,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "TicketPrice"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "(\\d+\\.\\d{2})",
+      "Left": 0.5,
+      "Top": 0.465,
+      "Right": 1,
+      "Bottom": 0.5,
+      "ScaleOrAbsolutePosition": true,
+      "Enable": false,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "TicketPrice"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "(\\d{4}-\\d{2}-\\d{2})",
+      "Left": 0.5,
+      "Top": 0.225,
+      "Right": 1,
+      "Bottom": 0.255,
+      "ScaleOrAbsolutePosition": true,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "StartTime"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})",
+      "Left": 0.5,
+      "Top": 0.265,
+      "Right": 1,
+      "Bottom": 0.295,
+      "ScaleOrAbsolutePosition": true,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "EndTime"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "([\\u4e00-\\u9fa5]+)",
+      "Left": 0.5,
+      "Top": 0.425,
+      "Right": 1,
+      "Bottom": 0.46,
+      "ScaleOrAbsolutePosition": true,
+      "Enable": false,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "Origin"
+        }
+      ]
+    }
+  ]
+}

@@ -1,8 +1,8 @@
+using System.Globalization;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Docnet.Core.Models;
 using InvoiceAssistant.Core.Data;
-using InvoiceAssistant.Core.Service.Images;
 using InvoiceAssistant.Core.Service.Processors;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
@@ -20,12 +20,12 @@ ILogger<InfoExtractUnit> logger
         foreach (var item in regexMapToProperties!)
         {
             var prop = props.First(t => t.Name == item.PropertyName);
-            SetValue(ret, prop, match.Groups[item.GroupsIndex].Value.ReplaceLineEndings().Trim());
+            SetValue(ret, prop, match.Groups[item.GroupsIndex].Value.ReplaceLineEndings().Trim(), item.Format);
         }
 
 
     }
-    private void SetValue(object obj, PropertyInfo prop, string v)
+    private void SetValue(object obj, PropertyInfo prop, string v, string? f)
     {
         if (prop.PropertyType == typeof(string))
         {
@@ -38,7 +38,9 @@ ILogger<InfoExtractUnit> logger
         }
         else if (prop.PropertyType == typeof(DateTime))
         {
-            var d = DateTime.Parse(v);
+            var d = string.IsNullOrWhiteSpace(f) ?
+             DateTime.Parse(v) :
+            DateTime.ParseExact(v, f, CultureInfo.InvariantCulture);
             prop.SetValue(obj, d);
         }
     }
@@ -56,7 +58,8 @@ ILogger<InfoExtractUnit> logger
               var props = typeof(InvoiceInfo).GetProperties();
               if (processConfig.Xtractors != null)
               {
-                  foreach (var xtractor in processConfig.Xtractors)
+                  var xtractors = processConfig.Xtractors.Where(t => t.Enable != false).ToList();
+                  foreach (var xtractor in xtractors)
                   {
                       var match = Regex.Match(txt, xtractor.RegexPattern!);
                       if (!match.Success) continue;
@@ -94,7 +97,8 @@ ILogger<InfoExtractUnit> logger
                 var props = typeof(InvoiceInfo).GetProperties();
                 if (processConfig.Xtractors != null)
                 {
-                    foreach (var xtractor in processConfig.Xtractors)
+                    var xtractors = processConfig.Xtractors.Where(t => t.Enable != false).ToList();
+                    foreach (var xtractor in xtractors)
                     {
                         txt = GetTxtByPdf(characters, page.GetPageWidth(), page.GetPageHeight(), xtractor);
                         logger.LogInformation($"{xtractor.RegexPattern} -> {txt}");
@@ -106,6 +110,7 @@ ILogger<InfoExtractUnit> logger
             });
         return ret;
     }
+
     public async Task<InvoiceInfo?> ExtractByImgOnlyText(string filePath, ProcessConfig processConfig)
     {
         InvoiceInfo? ret = null;
@@ -121,7 +126,8 @@ ILogger<InfoExtractUnit> logger
         var props = typeof(InvoiceInfo).GetProperties();
         if (processConfig.Xtractors != null)
         {
-            foreach (var xtractor in processConfig.Xtractors)
+            var xtractors = processConfig.Xtractors.Where(t => t.Enable != false).ToList();
+            foreach (var xtractor in xtractors)
             {
                 var match = Regex.Match(txt, xtractor.RegexPattern!);
                 if (!match.Success) continue;
@@ -174,7 +180,8 @@ ILogger<InfoExtractUnit> logger
         var props = typeof(InvoiceInfo).GetProperties();
         if (processConfig.Xtractors != null)
         {
-            foreach (var xtractor in processConfig.Xtractors)
+            var xtractors = processConfig.Xtractors.Where(t => t.Enable != false).ToList();
+            foreach (var xtractor in xtractors)
             {
                 txt = GetTxtByImg(engie, gray, xtractor);
                 logger.LogInformation($"{xtractor.RegexPattern} -> {txt}");
