@@ -1,3 +1,5 @@
+using System.Drawing;
+
 namespace InvoiceAssistant.Core.Data;
 
 public class RegexMapToPropertyMetadata(int groupsIndex, string? propertyName)
@@ -37,5 +39,17 @@ public class ExtractMetadata
         Top += y;
         Bottom += y;
     }
-
+    public Rectangle GetRoiRect(int w, int h)
+    {
+        var l = (int)(w * Left);
+        var r = (int)(w * Right);
+        var t = (int)(h * Top);
+        var b = (int)(h * Bottom);
+        return new Rectangle(l, t, r - l, b - t);
+    }
+    public Rectangle GetRoiRect()
+    {
+        return new Rectangle((int)Left, (int)Top,
+                    (int)(Right - Left), (int)(Bottom - Top));
+    }
 }

@@ -105,7 +105,7 @@ public class RenameProcessor(ILogger<RenameProcessor> logger) : IRenameProcessor
         var oinfos = infos.Select(t =>
         {
             var m = times.FirstOrDefault(tt => tt[0] <= t.StartTime && t.StartTime < tt[1]);
-            return new OrderInvoiceInfo { Key = m == null ? "" : $"{m[0]:yyyy-MM-dd}", Info = t };
+            return new OrderInvoiceInfo { Key = m == null ? "" : $"{m[0]:yyyy.MM.dd}", Info = t };
         }).ToList();
         var ks = oinfos.Where(t => !string.IsNullOrWhiteSpace(t.Key)).ToList();
         var nks = oinfos.Where(t => string.IsNullOrWhiteSpace(t.Key)).ToList();
@@ -125,13 +125,19 @@ public class RenameProcessor(ILogger<RenameProcessor> logger) : IRenameProcessor
         {
             Rename(item.Info!);
         }
-        foreach (var item in ks)
+        var gss = oinfos.Where(t => !string.IsNullOrWhiteSpace(t.Key)).GroupBy(t => t.Key).ToList();
+        foreach (var gs in gss)
         {
-            var info = item.Info!;
-            string filePath = info.FilePath!;
-            var dir = Path.GetDirectoryName(filePath);
-            var newFn = GetNewFilename(info, false);
-            TryMove(filePath, Path.Combine(dir!, item.Key!, newFn));
+            var ts = gs.Where(t => t.Info!.StartTime != DateTime.MinValue).Select(t => t.Info!.StartTime).Order();
+            var tf = $"{ts.First():yyyy.MM.dd}-{ts.Last():yyyy.MM.dd}";
+            foreach (var item in gs)
+            {
+                var info = item.Info!;
+                string filePath = info.FilePath!;
+                var dir = Path.GetDirectoryName(filePath);
+                var newFn = GetNewFilename(info, false);
+                TryMove(filePath, Path.Combine(dir!, tf, newFn));
+            }
         }
     }
 }

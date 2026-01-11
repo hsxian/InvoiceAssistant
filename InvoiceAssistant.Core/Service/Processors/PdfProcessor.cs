@@ -2,7 +2,9 @@
 using Docnet.Core.Models;
 using Docnet.Core.Readers;
 using Ghostscript.NET.Rasterizer;
+using InvoiceAssistant.Core.Service.Images;
 using Microsoft.Extensions.Logging;
+using OpenCvSharp;
 using SkiaSharp;
 
 namespace InvoiceAssistant.Core.Service.Processors;
@@ -115,4 +117,16 @@ public class PdfProcessor(ILogger<PdfProcessor> logger) : IPdfProcessor
         return string.Concat(FilterIntersect(characters, bound).Select(t => t.Char));
     }
 
+    public async Task<List<Mat>> ExtractMatImages(string filePath, int dpi = 300)
+    {
+        List<Mat> ret = [];
+        var sks = await ExtractImages(filePath, dpi);
+        foreach (var item in sks)
+        {
+            var mat = MyImageConverter.SKBitmapToMat(item);
+            ret.Add(mat);
+            item.Dispose();
+        }
+        return ret;
+    }
 }

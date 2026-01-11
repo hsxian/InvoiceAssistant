@@ -24,6 +24,9 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.1" />
     <PackageReference Include="OpenCvSharp4" Version="4.11.0.20250507" />
     <PackageReference Include="OpenCvSharp4_.runtime.ubuntu.20.04-x64" Version="4.10.0.20240616" />
+    <PackageReference Include="Sdcb.PaddleInference.runtime.linux-x64" Version="3.1.0.54" />
+    <PackageReference Include="Sdcb.PaddleOCR" Version="3.0.1" />
+    <PackageReference Include="Sdcb.PaddleOCR.Models.Local" Version="3.0.1" />
     <PackageReference Include="System.Drawing.Common" Version="10.0.1" />
     <PackageReference Include="Tesseract" Version="5.2.0" />
   </ItemGroup>

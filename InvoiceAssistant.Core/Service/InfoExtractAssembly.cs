@@ -49,6 +49,7 @@ public class InfoExtractAssembly(ILogger<InfoExtractAssembly> logger,
         List<InvoiceInfo> ret = [];
         foreach (var item in files)
         {
+            logger.LogInformation("开始处理：{}", item);
             if (RenameProcessor.InvoiceOwner != null &&
             Path.GetFileNameWithoutExtension(item).Contains(RenameProcessor.InvoiceOwner))
             {

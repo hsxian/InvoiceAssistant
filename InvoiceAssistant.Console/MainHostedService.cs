@@ -18,6 +18,10 @@ IConfiguration configuration) : IHostedService
         var configs = await infoExtractAssembly.GetProcessConfigs(pch);
         var infos = await infoExtractAssembly.Extract(rfh, configs);
         renameProcessor.TryGroup(infos);
+        // foreach (var item in infos)
+        // {
+        //     renameProcessor.Rename(item);
+        // }
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)

@@ -1,6 +1,6 @@
-using System.Security.Cryptography;
 using InvoiceAssistant.Core.Service;
 using InvoiceAssistant.Core.Service.Extractors;
+using InvoiceAssistant.Core.Service.ExtractUnits;
 using InvoiceAssistant.Core.Service.Processors;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,10 +10,10 @@ public static class ServicesConfig
 {
     public static IServiceCollection ConfigInvoiceAssistantCore(this IServiceCollection service)
     {
-        service.AddScoped<IInfoExtractUnit, InfoExtractUnit>();
+        service.AddScoped<IPdfInfoExtractUnit, PdfInfoExtractUnit>();
+        service.AddScoped<IImageInfoExtractUnit, PaddleOCRImageInfoExtractUnit>();
         service.AddScoped<IInfoExtractAssembly, InfoExtractAssembly>();
         service.AddScoped<IRenameProcessor, RenameProcessor>();
-        service.AddScoped<IImageProcessor, ImageProcessor>();
         service.AddSingleton<IPdfProcessor, PdfProcessor>();
         service.AddTransient<IInfoExtractor, ImageOnlyTextExtractor>();
         service.AddTransient<IInfoExtractor, ImageWithTextPositionExtractor>();
