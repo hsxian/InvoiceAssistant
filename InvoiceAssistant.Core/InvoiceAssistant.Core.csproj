@@ -17,7 +17,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>x64/libtesseract50.so</TargetPath>
     </None>
-    <PackageReference Include="OpenCvSharp4_.runtime.ubuntu.20.04-x64" Version="4.10.0.20240616"/>
+    <PackageReference Include="OpenCvSharp4.official.runtime.ubuntu.24.04-x64" Version="4.13.0.20260308" />
     <PackageReference Include="Sdcb.PaddleInference.runtime.linux-x64" Version="3.1.0.54"/>
   </ItemGroup>
   <ItemGroup Condition=" &apos;$([MSBuild]::IsOsPlatform(Windows))&apos; ">

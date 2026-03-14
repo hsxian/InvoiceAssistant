@@ -90,7 +90,9 @@ public class PaddleOCRImageInfoExtractUnit : IImageInfoExtractUnit
         PaddleOcrResult result = paddleOcrAll.Run(mat);
         InvoiceInfo? ret = null;
         var txt = result.Text.Replace(" ", "");
+#if DEBUG
         Console.WriteLine("Detected all texts: \n" + txt);
+#endif
         if (!Regex.Match(txt, processConfig.Matcher!.RegexPattern!).Success)
         {
             return ret;

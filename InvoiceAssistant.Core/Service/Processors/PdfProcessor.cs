@@ -26,11 +26,14 @@ public class PdfProcessor(ILogger<PdfProcessor> logger) : IPdfProcessor
         var ret = new List<SKBitmap>();
         // 创建 Rasterizer 实例
         using var rasterizer = new GhostscriptRasterizer();
+        var lv = GhostscriptVersionInfo.GetLastInstalledVersion(GhostscriptLicense.GPL | GhostscriptLicense.AFPL, GhostscriptLicense.GPL);
         // 初始化（自动查找系统 gs）
-        //rasterizer.Open(filePath);
+#if Windows
         using var stream = File.Open(filePath, FileMode.Open);//Or go with using
-        rasterizer.Open(stream, GhostscriptVersionInfo.GetLastInstalledVersion(GhostscriptLicense.GPL | GhostscriptLicense.AFPL, GhostscriptLicense.GPL), true);
-
+        rasterizer.Open(stream, lv, true);
+#else
+        rasterizer.Open(filePath);
+#endif
 
         int pageCount = rasterizer.PageCount;
 
@@ -85,10 +88,12 @@ public class PdfProcessor(ILogger<PdfProcessor> logger) : IPdfProcessor
         {
             using var pageReader = docReader.GetPageReader(i);
             var characters = pageReader.GetCharacters();
+#if DEBUG
             foreach (var character in characters)
             {
                 Console.WriteLine($"{character.Char} {character.Box.Left} {character.Box.Top} {character.Box.Right} {character.Box.Bottom}");
             }
+#endif
             action(pageReader);
         }
         await Task.CompletedTask;
