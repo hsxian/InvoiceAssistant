@@ -63,6 +63,7 @@ public class TesseractImageInfoExtractUnit(ILogger<TesseractImageInfoExtractUnit
                 ret.SetValue(props, match, xtractor.RegexMapToProperties!);
             }
         }
+        await Task.CompletedTask;
         return ret;
     }
     public async Task<InvoiceInfo?> ExtractByImg(Mat mat, ProcessConfig processConfig)
@@ -109,6 +110,7 @@ public class TesseractImageInfoExtractUnit(ILogger<TesseractImageInfoExtractUnit
                 ret.SetValue(props, match, xtractor.RegexMapToProperties!);
             }
         }
+        await Task.CompletedTask;
         return ret;
     }
     public async Task<InvoiceInfo?> ExtractByImgOnlyText(string filePath, ProcessConfig processConfig)

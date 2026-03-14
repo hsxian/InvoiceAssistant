@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace InvoiceAssistant.Core.Service.Extractors;
 
-public class ImageWithTextPositionExtractor(ILogger<ImageWithTextPositionExtractor> logger,
+public class ImageWithTextPositionExtractor(
 IImageInfoExtractUnit imageInfoExtractUnit) : IInfoExtractor
 {
     public ProcessType ProcessType => Data.ProcessType.ImageWithTextPosition;

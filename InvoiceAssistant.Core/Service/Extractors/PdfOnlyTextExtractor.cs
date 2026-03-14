@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace InvoiceAssistant.Core.Service.Extractors;
 
-public class PdfOnlyTextExtractor(ILogger<PdfOnlyTextExtractor> logger,
+public class PdfOnlyTextExtractor(
  IPdfInfoExtractUnit pdfInfoExtractUnit) : IInfoExtractor
 {
     public ProcessType ProcessType => Data.ProcessType.PdfOnlyText;

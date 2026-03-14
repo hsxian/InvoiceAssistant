@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace InvoiceAssistant.Core.Service.Extractors;
 
-public class PdfToImageWithTextPositionExtractor(ILogger<PdfToImageWithTextPositionExtractor> logger,
+public class PdfToImageWithTextPositionExtractor(
 IImageInfoExtractUnit imageInfoExtractUnit,
 IPdfProcessor pdfProcessor) : IInfoExtractor
 {

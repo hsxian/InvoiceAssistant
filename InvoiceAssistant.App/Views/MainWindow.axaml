@@ -1,4 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:InvoiceAssistant.App.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -14,7 +14,18 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
-
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-
+    <Grid RowDefinitions="auto,*">
+        <Menu>
+            <MenuItem Header="文件">
+                <MenuItem Header="打开文件"/>
+                <Separator/>
+                <MenuItem Header="打开文件夹"/>
+            </MenuItem>
+            <MenuItem Header="设置">
+                <MenuItem Header="配置设置" Command="{Binding OpenProcessConfigWindowCommand}"/>
+                <MenuItem Header="首选项"/>
+            </MenuItem>
+        </Menu>
+        <TextBlock Grid.Row="0" Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    </Grid>
 </Window>

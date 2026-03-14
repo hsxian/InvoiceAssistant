@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace InvoiceAssistant.Core.Service.Extractors;
 
-public class PdfWithTextPositionExtractor(ILogger<PdfWithTextPositionExtractor> logger,
+public class PdfWithTextPositionExtractor(
  IPdfInfoExtractUnit pdfInfoExtractUnit) : IInfoExtractor
 {
     public ProcessType ProcessType => ProcessType.PdfWithTextPosition;

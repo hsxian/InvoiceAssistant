@@ -1,6 +1,7 @@
 ﻿using Docnet.Core;
 using Docnet.Core.Models;
 using Docnet.Core.Readers;
+using Ghostscript.NET;
 using Ghostscript.NET.Rasterizer;
 using InvoiceAssistant.Core.Service.Images;
 using Microsoft.Extensions.Logging;
@@ -26,7 +27,10 @@ public class PdfProcessor(ILogger<PdfProcessor> logger) : IPdfProcessor
         // 创建 Rasterizer 实例
         using var rasterizer = new GhostscriptRasterizer();
         // 初始化（自动查找系统 gs）
-        rasterizer.Open(filePath);
+        //rasterizer.Open(filePath);
+        using var stream = File.Open(filePath, FileMode.Open);//Or go with using
+        rasterizer.Open(stream, GhostscriptVersionInfo.GetLastInstalledVersion(GhostscriptLicense.GPL | GhostscriptLicense.AFPL, GhostscriptLicense.GPL), true);
+
 
         int pageCount = rasterizer.PageCount;
 
@@ -39,6 +43,7 @@ public class PdfProcessor(ILogger<PdfProcessor> logger) : IPdfProcessor
 
             ret.Add(img);
         }
+        await Task.CompletedTask;
         return ret;
     }
     private List<byte[]> ExtractImages2(string filePath, int dpi = 300)
@@ -68,6 +73,7 @@ public class PdfProcessor(ILogger<PdfProcessor> logger) : IPdfProcessor
             //  logger.LogInformation(text);
             ret.Add(text);
         }
+        await Task.CompletedTask;
         return ret;
     }
     public async Task ForeachPdfPage(string filePath, Action<IPageReader> action)
@@ -85,6 +91,7 @@ public class PdfProcessor(ILogger<PdfProcessor> logger) : IPdfProcessor
             }
             action(pageReader);
         }
+        await Task.CompletedTask;
     }
     public IEnumerable<Character> FilterIntersect(IEnumerable<Character> characters, BoundBox bound)
     {

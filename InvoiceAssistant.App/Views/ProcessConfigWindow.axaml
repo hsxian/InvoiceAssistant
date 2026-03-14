@@ -1,0 +1,21 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:InvoiceAssistant.App.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="InvoiceAssistant.App.ProcessConfigWindow"
+        x:DataType="vm:ProcessConfigViewModel"
+        Title="ProcessConfigWindow">
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:ProcessConfigViewModel />
+    </Design.DataContext>
+  <Grid>
+   <Grid.ColumnDefinitions>
+    <ColumnDefinition Width="auto"></ColumnDefinition>
+    <ColumnDefinition Width="*"></ColumnDefinition>
+    </Grid.ColumnDefinitions>
+  </Grid>
+</Window>

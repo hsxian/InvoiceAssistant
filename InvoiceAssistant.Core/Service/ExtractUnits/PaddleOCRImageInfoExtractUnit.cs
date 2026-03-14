@@ -19,7 +19,7 @@ public class PaddleOCRImageInfoExtractUnit : IImageInfoExtractUnit
         FullOcrModel model = LocalFullModels.ChineseV5;
         paddleOcrAll = new(model, PaddleDevice.Mkldnn())
         {
-            AllowRotateDetection = true, /* 允许识别有角度的文字 */
+            AllowRotateDetection = false, /* 允许识别有角度的文字 */
             Enable180Classification = false, /* 允许识别旋转角度大于90度的文字 */
         };
         this.logger = logger;
@@ -75,6 +75,7 @@ public class PaddleOCRImageInfoExtractUnit : IImageInfoExtractUnit
                 ret.SetValue(props, match, xtractor.RegexMapToProperties!);
             }
         }
+        await Task.CompletedTask;
         return ret;
     }
 
@@ -106,6 +107,7 @@ public class PaddleOCRImageInfoExtractUnit : IImageInfoExtractUnit
                 ret.SetValue(props, match, xtractor.RegexMapToProperties!);
             }
         }
+        await Task.CompletedTask;
         return ret;
     }
 
@@ -122,5 +124,6 @@ public class PaddleOCRImageInfoExtractUnit : IImageInfoExtractUnit
         {
             Console.WriteLine($"Text: {region.Text}, Score: {region.Score}, RectCenter: {region.Rect.Center}, RectSize:    {region.Rect.Size}, Angle: {region.Rect.Angle}");
         }
+        await Task.CompletedTask;
     }
 }

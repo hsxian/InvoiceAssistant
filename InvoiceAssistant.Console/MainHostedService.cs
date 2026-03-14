@@ -26,7 +26,7 @@ IConfiguration configuration) : IHostedService
 
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-
+        await Task.CompletedTask;
     }
 }
 // var dir = "/2/";

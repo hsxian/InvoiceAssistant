@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace InvoiceAssistant.Core.Service.Extractors;
 
-public class ImageOnlyTextExtractor(ILogger<ImageOnlyTextExtractor> logger,
+public class ImageOnlyTextExtractor(
  IImageInfoExtractUnit imageInfoExtractUnit) : IInfoExtractor
 {
 

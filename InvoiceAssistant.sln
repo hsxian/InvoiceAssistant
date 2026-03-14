@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvoiceAssistant.App", "InvoiceAssistant.App\InvoiceAssistant.App.csproj", "{77C6A3BD-D077-45E0-AA66-FE0EEBA024AB}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvoiceAssistant.Core", "InvoiceAssistant.Core\InvoiceAssistant.Core.csproj", "{9238291E-FB20-49A5-8F4A-138C9AE6650F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvoiceAssistant.Console", "InvoiceAssistant.Console\InvoiceAssistant.Console.csproj", "{CFEF7382-460A-49C0-9B17-ABD5787FFFC5}"
@@ -14,14 +12,7 @@ Global
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{77C6A3BD-D077-45E0-AA66-FE0EEBA024AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{77C6A3BD-D077-45E0-AA66-FE0EEBA024AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{77C6A3BD-D077-45E0-AA66-FE0EEBA024AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{77C6A3BD-D077-45E0-AA66-FE0EEBA024AB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9238291E-FB20-49A5-8F4A-138C9AE6650F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9238291E-FB20-49A5-8F4A-138C9AE6650F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9238291E-FB20-49A5-8F4A-138C9AE6650F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -30,5 +21,8 @@ Global
 		{CFEF7382-460A-49C0-9B17-ABD5787FFFC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFEF7382-460A-49C0-9B17-ABD5787FFFC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFEF7382-460A-49C0-9B17-ABD5787FFFC5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
