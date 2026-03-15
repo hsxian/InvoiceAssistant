@@ -26,10 +26,10 @@ public class PdfProcessor(ILogger<PdfProcessor> logger) : IPdfProcessor
         var ret = new List<SKBitmap>();
         // 创建 Rasterizer 实例
         using var rasterizer = new GhostscriptRasterizer();
-        var lv = GhostscriptVersionInfo.GetLastInstalledVersion(GhostscriptLicense.GPL | GhostscriptLicense.AFPL, GhostscriptLicense.GPL);
         // 初始化（自动查找系统 gs）
 #if Windows
         using var stream = File.Open(filePath, FileMode.Open);//Or go with using
+        var lv = GhostscriptVersionInfo.GetLastInstalledVersion(GhostscriptLicense.GPL | GhostscriptLicense.AFPL, GhostscriptLicense.GPL);
         rasterizer.Open(stream, lv, true);
 #else
         rasterizer.Open(filePath);

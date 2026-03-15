@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvoiceAssistant.Core", "In
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvoiceAssistant.Console", "InvoiceAssistant.Console\InvoiceAssistant.Console.csproj", "{CFEF7382-460A-49C0-9B17-ABD5787FFFC5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvoiceAssistant.App", "InvoiceAssistant.App\InvoiceAssistant.App.csproj", "{F700D4EC-BB60-4FEF-94FB-38A675A83D16}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{CFEF7382-460A-49C0-9B17-ABD5787FFFC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFEF7382-460A-49C0-9B17-ABD5787FFFC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFEF7382-460A-49C0-9B17-ABD5787FFFC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F700D4EC-BB60-4FEF-94FB-38A675A83D16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F700D4EC-BB60-4FEF-94FB-38A675A83D16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F700D4EC-BB60-4FEF-94FB-38A675A83D16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F700D4EC-BB60-4FEF-94FB-38A675A83D16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

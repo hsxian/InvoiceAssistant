@@ -14,8 +14,8 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
-    <Grid RowDefinitions="auto,*">
-        <Menu>
+    <Grid RowDefinitions="auto,auto,*">
+        <Menu Grid.Row="0">
             <MenuItem Header="文件">
                 <MenuItem Header="打开文件"/>
                 <Separator/>
@@ -26,6 +26,30 @@
                 <MenuItem Header="首选项"/>
             </MenuItem>
         </Menu>
-        <TextBlock Grid.Row="0" Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        
+         <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+             <TextBlock Text="{Binding Greeting}" FontSize="16" FontWeight="Bold"/>
+             <TextBlock Text="分类: " VerticalAlignment="Center"/>
+             <ComboBox ItemsSource="{Binding ProcessClassify}" SelectedItem="{Binding CurrentProcessClassify}" Width="200"/>
+         </StackPanel>
+        
+        <Grid Grid.Row="2" Margin="10" RowDefinitions="auto,auto,auto,*" RowSpacing="10">
+            <TextBlock Grid.Row="0" Text="配置列表" FontSize="14" FontWeight="Bold"/>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10">
+                <Button Content="添加配置" Command="{Binding AddProcessConfigCommand}"/>
+                <Button Content="删除配置" Command="{Binding DeleteProcessConfigCommand}"/>
+            </StackPanel>
+            <ListBox Grid.Row="2" ItemsSource="{Binding ProcessConfigList}" Margin="0,5,0,0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnDefinitions="*,auto,auto" ColumnSpacing="10">
+                            <TextBlock Text="{Binding Title}" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding ProcessValue}" VerticalAlignment="Center"/>
+                            <Button Grid.Column="2" Content="编辑" Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).EditProcessConfigCommand}" CommandParameter="{Binding}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
     </Grid>
 </Window>

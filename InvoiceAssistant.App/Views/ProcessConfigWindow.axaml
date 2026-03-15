@@ -3,8 +3,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:InvoiceAssistant.App.ViewModels"
+        xmlns:vs="using:InvoiceAssistant.App.Views"
+        xmlns:converters="clr-namespace:Avalonia.Data.Converters;assembly=Avalonia.Base"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="InvoiceAssistant.App.ProcessConfigWindow"
+        x:Class="InvoiceAssistant.App.Views.ProcessConfigWindow"
         x:DataType="vm:ProcessConfigViewModel"
         Title="ProcessConfigWindow">
     <Design.DataContext>
@@ -12,10 +14,79 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:ProcessConfigViewModel />
     </Design.DataContext>
-  <Grid>
-   <Grid.ColumnDefinitions>
-    <ColumnDefinition Width="auto"></ColumnDefinition>
-    <ColumnDefinition Width="*"></ColumnDefinition>
-    </Grid.ColumnDefinitions>
-  </Grid>
+    <Window.Resources>
+    </Window.Resources>
+    <Grid ColumnDefinitions="auto,*">
+        <StackPanel Margin="10">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Content="打开图片" Command="{Binding OpenImageCommand}" Margin="0,0,10,0" />
+                <TextBlock VerticalAlignment="Center" Text="PDF转图像DPI: "
+                           Margin="0,0,10,0" />
+                <TextBox Name="DpiSlider" VerticalAlignment="Center" Width="100" Text="{Binding PdfToImageDpi}" />
+                <TextBlock VerticalAlignment="Center" Margin="10,0,10,0"
+                           Text="{Binding #ScaleSlider.Value,StringFormat=图片放大倍数: {0}}" />
+                <Slider Name="ScaleSlider" Minimum="1" Maximum="10" TickFrequency="1" IsSnapToTickEnabled="True"
+                        Width="100" Value="{Binding ImageScale}" ValueChanged="ScaleSlider_OnValueChanged" />
+            </StackPanel>
+            <ScrollViewer Margin="10" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                          HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border BorderThickness="1" BorderBrush="#33000000">
+                    <Grid>
+                        <Image Name="DisplayImage" Stretch="Uniform" StretchDirection="Both"
+                               Source="{Binding DisplayBitmap}" />
+                        <Canvas Name="ImageCanvas" Width="{Binding DisplayBitmap.Size.Width}"
+                                Height="{Binding DisplayBitmap.Size.Height}">
+                        </Canvas>
+                    </Grid>
+                </Border>
+            </ScrollViewer>
+        </StackPanel>
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                      HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Margin="10">
+                <TextBlock Text="配置信息" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" />
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock Text="标题: " Width="80" VerticalAlignment="Center" />
+                    <TextBox Text="{Binding ProcessConfig.Title, Mode=TwoWay}" Width="200" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock Text="重命名规则: " Width="80" VerticalAlignment="Center" />
+                    <TextBox Text="{Binding ProcessConfig.RenameRule, Mode=TwoWay}" Width="200" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock Text="分组标志: " Width="80" VerticalAlignment="Center" />
+                    <CheckBox IsChecked="{Binding ProcessConfig.GroupFlag, Mode=TwoWay}" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock Text="处理类型: " Width="80" VerticalAlignment="Center" />
+                    <ComboBox ItemsSource="{Binding ProcessTypeOptions}" SelectedValueBinding="{Binding Value}"
+                              SelectedValue="{Binding ProcessConfig.ProcessValue, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Label}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+
+                <TextBlock Text="匹配器信息" FontSize="14" FontWeight="Bold" Margin="0,10,0,5" />
+
+                <vs:ExtractMetadataEditor Margin="0,0,0,0" DataContext="{Binding ProcessConfig.Matcher}" />
+
+
+                <TextBlock Text="提取器信息" FontSize="14" FontWeight="Bold" Margin="0,10,0,5" />
+                <ListBox ItemsSource="{Binding ProcessConfig.Xtractors}" Margin="0,0,0,0">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <vs:ExtractMetadataEditor Margin="0,0,0,0" DataContext="{Binding}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </Window>
