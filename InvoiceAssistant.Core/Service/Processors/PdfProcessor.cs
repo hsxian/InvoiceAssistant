@@ -51,7 +51,7 @@ public class PdfProcessor(ILogger<PdfProcessor> logger) : IPdfProcessor
     }
     private List<byte[]> ExtractImages2(string filePath, int dpi = 300)
     {
-        using var docReader = DocNet.GetDocReader(filePath, new PageDimensions(1));
+        using var docReader = DocNet.GetDocReader(filePath, new PageDimensions(dpi / 72.0));
         var count = docReader.GetPageCount();
         var ret = new List<byte[]>();
         for (int i = 0; i < count; i++)
@@ -64,9 +64,9 @@ public class PdfProcessor(ILogger<PdfProcessor> logger) : IPdfProcessor
         }
         return ret;
     }
-    public async Task<List<string>> ExtractText(string filePath)
+    public async Task<List<string>> ExtractText(string filePath, int dpi = 300)
     {
-        using var docReader = DocNet.GetDocReader(filePath, new PageDimensions(1));
+        using var docReader = DocNet.GetDocReader(filePath, new PageDimensions(dpi / 72.0));
         var count = docReader.GetPageCount();
         var ret = new List<string>();
         for (int i = 0; i < count; i++)
@@ -79,9 +79,9 @@ public class PdfProcessor(ILogger<PdfProcessor> logger) : IPdfProcessor
         await Task.CompletedTask;
         return ret;
     }
-    public async Task ForeachPdfPage(string filePath, Action<IPageReader> action)
+    public async Task ForeachPdfPage(string filePath, Action<IPageReader> action, int dpi = 300)
     {
-        using var docReader = DocNet.GetDocReader(filePath, new PageDimensions(1));
+        using var docReader = DocNet.GetDocReader(filePath, new PageDimensions(dpi / 72.0));
         var count = docReader.GetPageCount();
         var ret = new List<string>();
         for (int i = 0; i < count; i++)

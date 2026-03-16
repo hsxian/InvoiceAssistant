@@ -9,7 +9,6 @@ namespace InvoiceAssistant.App.Models;
 // 选择框类
 public class SelectionBox
 {
-    public float Scale { get; set; } = 1;
     public Rect Bounds { get; private set; }
     public ExtractMetadata Metadata { get; set; }
     private const double HandleSize = 8;
@@ -122,18 +121,18 @@ public class SelectionBox
         {
             BorderBrush = Brushes.Red,
             BorderThickness = new Thickness(2),
-            Width = Bounds.Width * Scale,
-            Height = Bounds.Height * Scale
+            Width = Bounds.Width,
+            Height = Bounds.Height
         };
-        Canvas.SetLeft(border, Bounds.Left * Scale);
-        Canvas.SetTop(border, Bounds.Top * Scale);
+        Canvas.SetLeft(border, Bounds.Left);
+        Canvas.SetTop(border, Bounds.Top);
         canvas.Children.Add(border);
 
         // 绘制调整手柄
-        DrawHandle(canvas, Bounds.TopLeft * Scale);
-        DrawHandle(canvas, Bounds.TopRight * Scale - new Point(HandleSize, 0));
-        DrawHandle(canvas, Bounds.BottomLeft * Scale - new Point(0, HandleSize));
-        DrawHandle(canvas, Bounds.BottomRight * Scale - new Point(HandleSize, HandleSize));
+        DrawHandle(canvas, Bounds.TopLeft);
+        DrawHandle(canvas, Bounds.TopRight - new Point(HandleSize, 0));
+        DrawHandle(canvas, Bounds.BottomLeft - new Point(0, HandleSize));
+        DrawHandle(canvas, Bounds.BottomRight - new Point(HandleSize, HandleSize));
     }
 
     private void DrawHandle(Canvas canvas, Point position)

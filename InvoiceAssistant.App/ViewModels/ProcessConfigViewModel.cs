@@ -27,8 +27,7 @@ public partial class ProcessConfigViewModel : ViewModelBase
     [ObservableProperty] private Bitmap? _displayBitmap;
 
     [ObservableProperty] private ProcessConfig? _processConfig;
-    [ObservableProperty] private int _pdfToImageDpi = 72;
-    [ObservableProperty] private int _imageScale = 1;
+    [ObservableProperty] private int _pdfToImageDpi = 150;
 
     [ObservableProperty]
     private ObservableCollection<EnumOptions.ProcessTypeOption> _processTypeOptions =

@@ -16,19 +16,15 @@
     </Design.DataContext>
     <Window.Resources>
     </Window.Resources>
-    <Grid ColumnDefinitions="auto,*">
-        <StackPanel Margin="10">
+    <Grid ColumnDefinitions="*,auto">
+        <Grid RowDefinitions="auto,*" Margin="10">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <Button Content="打开图片" Command="{Binding OpenImageCommand}" Margin="0,0,10,0" />
                 <TextBlock VerticalAlignment="Center" Text="PDF转图像DPI: "
                            Margin="0,0,10,0" />
                 <TextBox Name="DpiSlider" VerticalAlignment="Center" Width="100" Text="{Binding PdfToImageDpi}" />
-                <TextBlock VerticalAlignment="Center" Margin="10,0,10,0"
-                           Text="{Binding #ScaleSlider.Value,StringFormat=图片放大倍数: {0}}" />
-                <Slider Name="ScaleSlider" Minimum="1" Maximum="10" TickFrequency="1" IsSnapToTickEnabled="True"
-                        Width="100" Value="{Binding ImageScale}" ValueChanged="ScaleSlider_OnValueChanged" />
             </StackPanel>
-            <ScrollViewer Margin="10" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+            <ScrollViewer Grid.Row="1" Margin="10" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                           HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Border BorderThickness="1" BorderBrush="#33000000">
                     <Grid>
@@ -40,7 +36,7 @@
                     </Grid>
                 </Border>
             </ScrollViewer>
-        </StackPanel>
+        </Grid>
         <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                       HorizontalAlignment="Center" VerticalAlignment="Center">
             <StackPanel Margin="10">

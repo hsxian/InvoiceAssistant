@@ -29,19 +29,19 @@
                           Margin="0,0,10,0" />
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="左:" VerticalAlignment="Center" />
-                <TextBox Text="{Binding Left}" />
+                <TextBox Text="{Binding Left, Mode=TwoWay}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="顶:" VerticalAlignment="Center" />
-                <TextBox Text="{Binding Top}" />
+                <TextBox Text="{Binding Top, Mode=TwoWay}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="右:" VerticalAlignment="Center" />
-                <TextBox Text="{Binding Right}" />
+                <TextBox Text="{Binding Right, Mode=TwoWay}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="底:" VerticalAlignment="Center" />
-                <TextBox Text="{Binding Bottom}" />
+                <TextBox Text="{Binding Bottom, Mode=TwoWay}" />
             </StackPanel>
         </StackPanel>
 

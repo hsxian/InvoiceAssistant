@@ -132,14 +132,4 @@ public partial class ProcessConfigWindow : Window
             box.Draw(ImageCanvas);
         }
     }
-
-    private void ScaleSlider_OnValueChanged(object? sender, RangeBaseValueChangedEventArgs e)
-    {
-        if (sender is not Slider slider || _viewModel?.DisplayBitmap == null) return;
-        DisplayImage.Width = slider.Value * _viewModel.DisplayBitmap.Size.Width;
-        DisplayImage.Height = slider.Value * _viewModel.DisplayBitmap.Size.Height;
-
-        _selectionBoxes.ForEach(t => t.Scale = (float)slider.Value);
-        DrawBoxes();
-    }
 }
