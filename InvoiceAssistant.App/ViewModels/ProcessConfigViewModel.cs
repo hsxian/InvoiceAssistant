@@ -17,6 +17,10 @@ using InvoiceAssistant.Core.Service.Images;
 using InvoiceAssistant.Core.Service.Processors;
 using InvoiceAssistant.App.Service;
 using System.ComponentModel;
+using System.Text.Json;
+using System.Text.Encodings.Web;
+using System.Text.Json.Serialization;
+using Tmds.DBus.Protocol;
 
 namespace InvoiceAssistant.App.ViewModels;
 
@@ -37,7 +41,6 @@ public partial class ProcessConfigViewModel : ViewModelBase
     public ProcessConfigWindow Window { get; set; }
     private readonly IInfoExtractAssembly _infoExtractAssembly;
     private readonly IPdfProcessor _pdfProcessor;
-
     public ProcessConfigViewModel(IInfoExtractAssembly infoExtractAssembly, IPdfProcessor pdfProcessor)
     {
         _infoExtractAssembly = infoExtractAssembly;
@@ -102,5 +105,29 @@ public partial class ProcessConfigViewModel : ViewModelBase
         }
 
         SelectionBoxesChanged?.Invoke(this, boxs);
+    }
+    [RelayCommand]
+    public async Task SaveConfig()
+    {
+        if (ProcessConfig is null)
+        {
+            return;
+        }
+        var json = JsonSerializer.Serialize(ProcessConfig, new JsonSerializerOptions
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            WriteIndented = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        });
+        await File.WriteAllTextAsync(ProcessConfig.FilePath!, json);
+    }
+    [RelayCommand]
+    public void SwitchValueByScaleOrAbsolute(ExtractMetadata metadata)
+    {
+        if (DisplayBitmap is null || DisplayBitmap.Size.Width == 0 || DisplayBitmap.Size.Height == 0)
+        {
+            return;
+        }
+        metadata.SwitchValueByScaleOrAbsolute((float)DisplayBitmap!.Size.Width, (float)DisplayBitmap!.Size.Height);
     }
 }

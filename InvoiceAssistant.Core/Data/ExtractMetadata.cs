@@ -20,6 +20,24 @@ public class ExtractMetadata : INotifyPropertyChanged
     public float Bottom { get; set; }
     public bool? Enable { get; set; }
     public bool ScaleOrAbsolutePosition { get; set; } = true;
+
+    public void SwitchValueByScaleOrAbsolute(float w, float h)
+    {
+        if (ScaleOrAbsolutePosition)
+        {
+            Left /= w;
+            Right /= w;
+            Top /= h;
+            Bottom /= h;
+        }
+        else
+        {
+            Left *= w;
+            Right *= w;
+            Top *= h;
+            Bottom *= h;
+        }
+    }
     public List<RegexMapToPropertyMetadata>? RegexMapToProperties { get; set; }
 
     public ExtractMetadata()

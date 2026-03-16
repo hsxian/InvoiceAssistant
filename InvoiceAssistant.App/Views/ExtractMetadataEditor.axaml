@@ -5,6 +5,7 @@
              xmlns:System="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              xmlns:vm="using:InvoiceAssistant.Core.Data"
+             xmlns:uivm="using:InvoiceAssistant.App.ViewModels"
              x:DataType="vm:ExtractMetadata"
              x:Class="InvoiceAssistant.App.Views.ExtractMetadataEditor">
     <Design.DataContext>
@@ -25,23 +26,24 @@
         <TextBlock Text="位置" />
 
         <StackPanel Orientation="Horizontal">
-            <ToggleSwitch IsChecked="{Binding ScaleOrAbsolutePosition}" OnContent="按比例" OffContent="按绝对位置"
-                          Margin="0,0,10,0" />
+            <ToggleSwitch IsChecked="{Binding ScaleOrAbsolutePosition}" OnContent="按比例" OffContent="按绝对位置" Margin="0,0,10,0"
+                          Command="{Binding $parent[Window].((uivm:ProcessConfigViewModel)DataContext).SwitchValueByScaleOrAbsoluteCommand}" 
+                          CommandParameter="{Binding $parent[UserControl].((vm:ExtractMetadata)DataContext)}"/>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="左:" VerticalAlignment="Center" />
-                <TextBox Text="{Binding Left, Mode=TwoWay, StringFormat={}{0:F2}}" />
+                <TextBox Text="{Binding Left, Mode=TwoWay, StringFormat={}{0:F3}}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="顶:" VerticalAlignment="Center" />
-                <TextBox Text="{Binding Top, Mode=TwoWay, StringFormat={}{0:F2}}" />
+                <TextBox Text="{Binding Top, Mode=TwoWay, StringFormat={}{0:F3}}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="右:" VerticalAlignment="Center" />
-                <TextBox Text="{Binding Right, Mode=TwoWay, StringFormat={}{0:F2}}" />
+                <TextBox Text="{Binding Right, Mode=TwoWay, StringFormat={}{0:F3}}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="底:" VerticalAlignment="Center" />
-                <TextBox Text="{Binding Bottom, Mode=TwoWay, StringFormat={}{0:F2}}" />
+                <TextBox Text="{Binding Bottom, Mode=TwoWay, StringFormat={}{0:F3}}" />
             </StackPanel>
         </StackPanel>
 

@@ -31,6 +31,7 @@ public class InfoExtractAssembly(ILogger<InfoExtractAssembly> logger,
                     logger.LogWarning("{}未正确配置，Title、Matcher、ProcessValue为必填。", file);
                     continue;
                 }
+                cfg.FilePath = file;
                 ret.Add(cfg);
             }
             catch (Exception ex)

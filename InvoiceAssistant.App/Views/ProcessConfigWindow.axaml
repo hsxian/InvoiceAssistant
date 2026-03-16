@@ -23,6 +23,7 @@
                 <TextBlock VerticalAlignment="Center" Text="PDF转图像DPI: "
                            Margin="0,0,10,0" />
                 <TextBox Name="DpiSlider" VerticalAlignment="Center" Width="100" Text="{Binding PdfToImageDpi}" />
+                <Button Content="保存配置" Command="{Binding SaveConfigCommand}" Margin="10,0,0,0" />
             </StackPanel>
             <ScrollViewer Grid.Row="1" Margin="10" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                           HorizontalAlignment="Center" VerticalAlignment="Center">

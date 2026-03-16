@@ -1,23 +1,23 @@
 {
   "Title": "火车票",
+  "GroupFlag": false,
   "ProcessValue": "PdfWithTextPosition",
   "Matcher": {
     "RegexPattern": "铁路|电子客票",
-    "Left": 180,
-    "Top": 15,
-    "Right": 410,
-    "Bottom": 40,
-    "ScaleOrAbsolutePosition": false,
-    "RegexMapToProperties": null
+    "Left": 0.29,
+    "Top": 0.04,
+    "Right": 0.6828819,
+    "Bottom": 0.095516525,
+    "ScaleOrAbsolutePosition": true
   },
   "Xtractors": [
     {
       "RegexPattern": "^([\\u4e00-\\u9fa5]+)站",
-      "Left": 90,
-      "Top": 80,
-      "Right": 190,
-      "Bottom": 100,
-      "ScaleOrAbsolutePosition": false,
+      "Left": 0.16,
+      "Top": 0.2,
+      "Right": 0.29,
+      "Bottom": 0.26,
+      "ScaleOrAbsolutePosition": true,
       "RegexMapToProperties": [
         {
           "GroupsIndex": 1,
@@ -27,11 +27,11 @@
     },
     {
       "RegexPattern": "^([\\u4e00-\\u9fa5]+)站",
-      "Left": 390,
-      "Top": 80,
-      "Right": 490,
-      "Bottom": 100,
-      "ScaleOrAbsolutePosition": false,
+      "Left": 0.66,
+      "Top": 0.2,
+      "Right": 0.8,
+      "Bottom": 0.26,
+      "ScaleOrAbsolutePosition": true,
       "RegexMapToProperties": [
         {
           "GroupsIndex": 1,
@@ -41,11 +41,11 @@
     },
     {
       "RegexPattern": "(\\d{4}年\\d{2}月\\d{2}日\\s*\\d{1,2}:\\d{2})开",
-      "Left": 20,
-      "Top": 130,
-      "Right": 160,
-      "Bottom": 150,
-      "ScaleOrAbsolutePosition": false,
+      "Left": 0.04,
+      "Top": 0.33,
+      "Right": 0.29,
+      "Bottom": 0.37,
+      "ScaleOrAbsolutePosition": true,
       "RegexMapToProperties": [
         {
           "GroupsIndex": 1,
@@ -55,11 +55,11 @@
     },
     {
       "RegexPattern": "(\\d+\\.\\d{2})",
-      "Left": 20,
-      "Top": 160,
-      "Right": 130,
-      "Bottom": 180,
-      "ScaleOrAbsolutePosition": false,
+      "Left": 0.04,
+      "Top": 0.41,
+      "Right": 0.26,
+      "Bottom": 0.46,
+      "ScaleOrAbsolutePosition": true,
       "RegexMapToProperties": [
         {
           "GroupsIndex": 1,

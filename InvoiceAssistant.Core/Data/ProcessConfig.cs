@@ -7,6 +7,8 @@ public class ProcessConfig : INotifyPropertyChanged
 {
     public string? Title { get; set; }
     public string? RenameRule { get; set; }
+    [JsonIgnore]
+    public string? FilePath { get; set; }
     public bool GroupFlag { get; set; }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]

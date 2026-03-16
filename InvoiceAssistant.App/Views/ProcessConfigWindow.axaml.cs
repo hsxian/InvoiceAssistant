@@ -80,6 +80,16 @@ public partial class ProcessConfigWindow : Window
         DrawBoxes();
     }
 
+    private void SyncPositionToExtractMetadata()
+    {
+        if (_currentBox == null || _viewModel?.DisplayBitmap is null
+        || _viewModel.DisplayBitmap.Size.Width == 0 || _viewModel.DisplayBitmap.Size.Height == 0)
+        {
+            return;
+        }
+        _currentBox!.SyncPositionToExtractMetadata(_viewModel.DisplayBitmap.Size.Width, _viewModel.DisplayBitmap.Size.Height);
+    }
+
     private void ImageCanvas_PointerMoved(object sender, PointerEventArgs e)
     {
         if (_currentBox == null)
@@ -94,13 +104,13 @@ public partial class ProcessConfigWindow : Window
             var delta = point - _startPoint;
             _currentBox.Move(delta);
             _startPoint = point;
-            _currentBox.SyncPositionToExtractMetadata(DisplayImage.Width, DisplayImage.Height);
+            SyncPositionToExtractMetadata();
         }
         else if (_isResizing)
         {
             // 调整框大小
             _currentBox.Resize(_currentHandle, point);
-            _currentBox.SyncPositionToExtractMetadata(DisplayImage.Width, DisplayImage.Height);
+            SyncPositionToExtractMetadata();
         }
         // else
         // {

@@ -1,23 +1,23 @@
 {
   "Title": "住宿发票",
+  "GroupFlag": false,
   "ProcessValue": "PdfWithTextPosition",
   "Matcher": {
     "RegexPattern": "住宿",
-    "Left": 10,
-    "Top": 160,
-    "Right": 80,
-    "Bottom": 170,
-    "ScaleOrAbsolutePosition": false,
-    "RegexMapToProperties": null
+    "Left": 0.02,
+    "Top": 0.4,
+    "Right": 0.16233568,
+    "Bottom": 0.4394985,
+    "ScaleOrAbsolutePosition": true
   },
   "Xtractors": [
     {
       "RegexPattern": "名称： *([\\u4e00-\\u9fa5]+)",
-      "Left": 310,
-      "Top": 90,
-      "Right": 580,
-      "Bottom": 110,
-      "ScaleOrAbsolutePosition": false,
+      "Left": 0.5312024,
+      "Top": 0.23,
+      "Right": 0.97,
+      "Bottom": 0.28473988,
+      "ScaleOrAbsolutePosition": true,
       "RegexMapToProperties": [
         {
           "GroupsIndex": 1,
@@ -27,12 +27,12 @@
     },
     {
       "RegexPattern": "名称： *([\\u4e00-\\u9fa5]+)",
-      "Left": 30,
-      "Top": 90,
-      "Right": 290,
-      "Bottom": 110,
-      "ScaleOrAbsolutePosition": false,
+      "Left": 0.054008484,
+      "Top": 0.23059858,
+      "Right": 0.49400848,
+      "Bottom": 0.28059858,
       "Enable": false,
+      "ScaleOrAbsolutePosition": true,
       "RegexMapToProperties": [
         {
           "GroupsIndex": 1,
@@ -42,11 +42,11 @@
     },
     {
       "RegexPattern": "开票日期：(\\d{4}年\\d{2}月\\d{2}日)",
-      "Left": 430,
-      "Top": 45,
-      "Right": 550,
-      "Bottom": 60,
-      "ScaleOrAbsolutePosition": false,
+      "Left": 0.72994757,
+      "Top": 0.1152033,
+      "Right": 0.92994756,
+      "Bottom": 0.15520331,
+      "ScaleOrAbsolutePosition": true,
       "RegexMapToProperties": [
         {
           "GroupsIndex": 1,
@@ -56,11 +56,11 @@
     },
     {
       "RegexPattern": "¥(\\d+\\.\\d{2})",
-      "Left": 410,
-      "Top": 280,
-      "Right": 500,
-      "Bottom": 290,
-      "ScaleOrAbsolutePosition": false,
+      "Left": 0.68,
+      "Top": 0.7,
+      "Right": 0.84,
+      "Bottom": 0.73,
+      "ScaleOrAbsolutePosition": true,
       "RegexMapToProperties": [
         {
           "GroupsIndex": 1,
