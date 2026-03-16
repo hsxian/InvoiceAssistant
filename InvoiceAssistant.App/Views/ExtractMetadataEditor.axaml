@@ -15,9 +15,14 @@
     </Design.DataContext>
     <UserControl.Resources>
         <System:Double x:Key="TitleWidth">100</System:Double>
+        <System:Double x:Key="PositionButtonWidth">100</System:Double>
     </UserControl.Resources>
     <StackPanel>
-        <ToggleSwitch IsChecked="{Binding Enable}" OnContent="启用" OffContent="禁用" />
+        <StackPanel Orientation="Horizontal">
+            <ToggleSwitch Classes="Small" IsThreeState="False" IsChecked="{Binding Enable}" Margin="0,0,10,0" OnContent="启用" OffContent="禁用" />
+            <Button Content="删除" Command="{Binding $parent[Window].((uivm:ProcessConfigViewModel)DataContext).RemoveXractorCommand}" 
+                CommandParameter="{Binding }" Classes="Danger Small"/>
+        </StackPanel>
 
         <StackPanel Orientation="Horizontal">
             <TextBlock Width="{StaticResource TitleWidth}" Text="类型判断: " VerticalAlignment="Center" />
@@ -26,26 +31,13 @@
         <TextBlock Text="位置" />
 
         <StackPanel Orientation="Horizontal">
-            <ToggleSwitch IsChecked="{Binding ScaleOrAbsolutePosition}" OnContent="按比例" OffContent="按绝对位置"
-                          Margin="0,0,10,0"
+            <ToggleSwitch Classes="Small" IsChecked="{Binding ScaleOrAbsolutePosition}" OnContent="按比例" OffContent="按绝对位置" Margin="0,0,10,0"
                           Command="{Binding $parent[Window].((uivm:ProcessConfigViewModel)DataContext).SwitchValueByScaleOrAbsoluteCommand}"
                           CommandParameter="{Binding $parent[UserControl].((vm:ExtractMetadata)DataContext)}" />
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="左:" VerticalAlignment="Center" />
-                <TextBox Text="{Binding Left, Mode=TwoWay, StringFormat={}{0:F3}}" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="顶:" VerticalAlignment="Center" />
-                <TextBox Text="{Binding Top, Mode=TwoWay, StringFormat={}{0:F3}}" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="右:" VerticalAlignment="Center" />
-                <TextBox Text="{Binding Right, Mode=TwoWay, StringFormat={}{0:F3}}" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="底:" VerticalAlignment="Center" />
-                <TextBox Text="{Binding Bottom, Mode=TwoWay, StringFormat={}{0:F3}}" />
-            </StackPanel>
+            <TextBox InnerLeftContent="左" Text="{Binding Left, Mode=TwoWay, StringFormat={}{0:F3}}" Width="{StaticResource PositionButtonWidth}" />
+            <TextBox InnerLeftContent="顶" Text="{Binding Top, Mode=TwoWay, StringFormat={}{0:F3}}" Width="{StaticResource PositionButtonWidth}" />
+            <TextBox InnerLeftContent="右" Text="{Binding Right, Mode=TwoWay, StringFormat={}{0:F3}}" Width="{StaticResource PositionButtonWidth}" />
+            <TextBox InnerLeftContent="底" Text="{Binding Bottom, Mode=TwoWay, StringFormat={}{0:F3}}" Width="{StaticResource PositionButtonWidth}" />
         </StackPanel>
 
         <StackPanel Orientation="Horizontal">
@@ -73,7 +65,7 @@
                             </ComboBox>
                             <TextBlock Grid.Column="4" Text="格式化: " VerticalAlignment="Center" />
                             <TextBox Grid.Column="5" Text="{Binding Format}" />
-                            <Button Grid.Column="6" Content="删除" Margin="0,0,10,0"
+                            <Button Grid.Column="6" Content="删除" Margin="0,0,10,0" Classes="Danger Small"
                                     Command="{Binding $parent[Window].((uivm:ProcessConfigViewModel)DataContext).RemoveRegexMapCommand}"
                                     CommandParameter="{Binding }" />
                         </Grid>
@@ -84,5 +76,6 @@
                     Command="{Binding $parent[Window].((uivm:ProcessConfigViewModel)DataContext).AddRegexMapCommand}"
                     CommandParameter="{Binding $parent[UserControl].((vm:ExtractMetadata)DataContext)}" />
         </StackPanel>
+        <Separator Margin="0,10,0,10" />
     </StackPanel>
 </UserControl>

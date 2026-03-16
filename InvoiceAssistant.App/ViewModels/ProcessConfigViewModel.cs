@@ -21,6 +21,7 @@ using System.Text.Json;
 using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
 using Tmds.DBus.Protocol;
+using System.Linq;
 
 namespace InvoiceAssistant.App.ViewModels;
 
@@ -144,28 +145,19 @@ public partial class ProcessConfigViewModel : ViewModelBase
     [RelayCommand]
     public void AddXractor()
     {
-        if (ProcessConfig is null)
-        {
-            return;
-        }
-
         var xractor = new ExtractMetadata
         {
             Right = 0.5f,
             Bottom = 0.1f,
         };
-        ProcessConfig.Xtractors = [.. ProcessConfig.Xtractors ?? [], xractor];
+        ProcessConfig!.Xtractors = [.. ProcessConfig.Xtractors ?? [], xractor];
         UpdateSelectionBoxes();
     }
 
     [RelayCommand]
-    public void RemoveXractor()
+    public void RemoveXractor(ExtractMetadata metadata)
     {
-        if (ProcessConfig is null)
-        {
-            return;
-        }
-        // ProcessConfig.Xtractors!.Remove(xractor);
+        ProcessConfig!.Xtractors = [.. ProcessConfig!.Xtractors!.Where(x => x != metadata)];
     }
 
     [RelayCommand]
@@ -180,11 +172,22 @@ public partial class ProcessConfigViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    public void RemoveRegexMap(ExtractMetadata metadata)
+    public void RemoveRegexMap(RegexMapToPropertyMetadata metadata)
     {
-        if (ProcessConfig is null)
+        var all = new List<ExtractMetadata>(ProcessConfig!.Xtractors ?? [])
         {
-            return;
+            ProcessConfig.Matcher!
+        };
+        foreach (var x in all)
+        {
+            foreach (var r in x.RegexMapToProperties!)
+            {
+                if (r == metadata)
+                {
+                    x.RegexMapToProperties = [.. x.RegexMapToProperties.Where(y => y != r)];
+                    return;
+                }
+            }
         }
     }
 }

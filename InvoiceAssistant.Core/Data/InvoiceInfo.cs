@@ -27,8 +27,6 @@ public class InvoiceInfo : INotifyPropertyChanged
             var prop = props.First(t => t.Name == item.PropertyName);
             SetValue(this, prop, match.Groups[item.GroupsIndex].Value.ReplaceLineEndings().Trim(), item.Format);
         }
-
-
     }
     private void SetValue(object obj, PropertyInfo prop, string v, string? f)
     {

@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using InvoiceAssistant.Core.Data;
 using InvoiceAssistant.Core.Service;
 using InvoiceAssistant.Core.Service.Processors;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace InvoiceAssistant.App.ViewModels;
 
@@ -22,20 +24,27 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _currentProcessClassify = string.Empty;
-    [ObservableProperty]
+
+    [ObservableProperty, NotifyCanExecuteChangedFor(nameof(RunProcessCommand))]
     private string _invoiceOwner = string.Empty;
     [ObservableProperty]
     private string _processResult = string.Empty;
+    [ObservableProperty, NotifyCanExecuteChangedFor(nameof(RunProcessCommand))]
+    private bool _isProcessing = false;
     [ObservableProperty]
     private ObservableCollection<ProcessConfig> _processConfigList = [];
     public MainWindow ViewWindow { get; set; }
     private readonly IInfoExtractAssembly _infoExtractAssembly;
     private readonly IRenameProcessor _renameProcessor;
+    private readonly ILogger<MainWindowViewModel> _logger;
 
-    public MainWindowViewModel(IInfoExtractAssembly infoExtractAssembly, IRenameProcessor renameProcessor)
+    public MainWindowViewModel(IInfoExtractAssembly infoExtractAssembly,
+     IRenameProcessor renameProcessor,
+     ILogger<MainWindowViewModel> logger)
     {
         _infoExtractAssembly = infoExtractAssembly;
         _renameProcessor = renameProcessor;
+        _logger = logger;
         ProcessClassify = new ObservableCollection<string>(Directory.GetDirectories(_processConfigPath).Select(x => Path.GetFileName(x)));
         if (ProcessClassify.Count > 0)
         {
@@ -44,7 +53,7 @@ public partial class MainWindowViewModel : ViewModelBase
         //监听日志事件
         CustomLoggerProvider.OnLogMessageSent += OnLogMessageSent;
     }
-    private void OnLogMessageSent(string logMessage)
+    private async void OnLogMessageSent(string logMessage)
     {
         ProcessResult = $"{ProcessResult}\n\n{logMessage}";
         // //在主线程更新UI
@@ -55,7 +64,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
 
     [RelayCommand]
-    public void EditProcessConfigCommand(ProcessConfig processConfig)
+    public void EditProcessConfig(ProcessConfig processConfig)
     {
         var vm = ServiceCollectionExtensions.ServiceProvider.GetRequiredService<ProcessConfigViewModel>();
         // 创建并显示第二个窗口
@@ -70,7 +79,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    public void OpenProcessConfigWindowCommand()
+    public void OpenProcessConfigWindow()
     {
         var vm = ServiceCollectionExtensions.ServiceProvider.GetRequiredService<ProcessConfigViewModel>();
         vm.ProcessConfig = new ProcessConfig();
@@ -85,18 +94,23 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    public void AddProcessConfigCommand()
+    public void AddProcessConfig()
     {
         // 添加新配置
-        var newConfig = new ProcessConfig { Title = "新配置", ProcessValue = ProcessType.UnKnown };
+        var newConfig = new ProcessConfig
+        {
+            Title = "新配置",
+            ProcessValue = ProcessType.UnKnown,
+            Matcher = new ExtractMetadata { Right = 0.5f, Bottom = 0.1f },
+            Xtractors = []
+        };
         ProcessConfigList.Add(newConfig);
     }
 
     [RelayCommand]
-    public void DeleteProcessConfigCommand()
+    public void DeleteProcessConfig(ProcessConfig config)
     {
-        // 删除选中的配置
-        // 这里需要实现具体的删除逻辑
+        ProcessConfigList.Remove(config);
     }
     partial void OnCurrentProcessClassifyChanged(string value)
     {
@@ -107,8 +121,10 @@ public partial class MainWindowViewModel : ViewModelBase
         var dir = Path.Combine(_processConfigPath, classify);
         ProcessConfigList = new ObservableCollection<ProcessConfig>(await _infoExtractAssembly.GetProcessConfigs(dir));
     }
-    [RelayCommand]
-    public async Task RunProcessCommand()
+    private bool CanRunProcess() =>
+        !string.IsNullOrEmpty(InvoiceOwner) && !IsProcessing;
+    [RelayCommand(CanExecute = nameof(CanRunProcess))]
+    public async Task RunProcess()
     {
         var topLevel = TopLevel.GetTopLevel(ViewWindow)!;
 
@@ -124,8 +140,19 @@ public partial class MainWindowViewModel : ViewModelBase
         _infoExtractAssembly.PdfExtensions = ["pdf"];
         _infoExtractAssembly.ImageExtensions = ["jpg", "jpeg", "png"];
         RenameProcessor.InvoiceOwner = InvoiceOwner;
-        var infos = await _infoExtractAssembly.Extract(rfh, ProcessConfigList);
-        _renameProcessor.TryGroup(infos);
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                var infos = await _infoExtractAssembly.Extract(rfh, ProcessConfigList);
+                _renameProcessor.TryGroup(infos);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "处理文件夹{0}时出错", rfh);
+            }
+        });
+        // _renameProcessor.TryGroup(infos);
         // foreach (var item in infos)
         // {
         //     renameProcessor.Rename(item);

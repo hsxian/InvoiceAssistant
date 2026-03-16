@@ -92,11 +92,44 @@ public partial class ProcessConfigWindow : Window
 
     private void ImageCanvas_PointerMoved(object sender, PointerEventArgs e)
     {
+        var point = e.GetPosition(DisplayImage);
+
+
         if (_currentBox == null)
+        {
+            if (_selectionBoxes != null && _selectionBoxes.Count > 0)
+            {
+                bool isHitHandle = false;
+                // 检查是否点击了现有框的调整手柄
+                foreach (var box in _selectionBoxes)
+                {
+                    var handle = box.HitTest(point);
+                    if (handle == ResizeHandle.None) continue;
+                    isHitHandle = true;
+                    break;
+                }
+
+                // 检查是否点击了现有框
+                if (!isHitHandle) foreach (var box in _selectionBoxes)
+                {
+                    if (!box.Contains(point)) continue;
+                    //鼠标手势
+                    isHitHandle = true;
+                    break;
+                }
+                if (isHitHandle)
+                {
+                    Cursor = new Cursor(StandardCursorType.Hand);
+                }
+                else
+                {
+                    Cursor = Cursor.Default;
+                }
+            }
             return;
+        }
 
         Console.WriteLine(nameof(ImageCanvas_PointerMoved));
-        var point = e.GetPosition(DisplayImage);
 
         if (_isDragging)
         {

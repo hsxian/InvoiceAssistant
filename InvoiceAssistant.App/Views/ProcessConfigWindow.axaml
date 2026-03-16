@@ -85,8 +85,7 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                    <Button Content="添加提取器" Command="{Binding AddXractorCommand}" Margin="0,0,10,0" />
-                    <Button Content="删除提取器" Command="{Binding RemoveXractorCommand}" Margin="0,0,10,0" />
+                    <Button Content="添加提取器" Command="{Binding AddXractorCommand}" Margin="0,0,10,0" Classes="Small"/>                  
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
