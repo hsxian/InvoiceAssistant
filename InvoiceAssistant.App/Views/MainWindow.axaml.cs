@@ -1,3 +1,4 @@
+using System;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using InvoiceAssistant.App.ViewModels;
@@ -12,5 +13,11 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
         if (Design.IsDesignMode)
             return;
+    }
+    protected override void OnDataContextChanged(EventArgs e)
+    {
+        base.OnDataContextChanged(e);
+        if (ViewModel != null)
+            ViewModel.ViewWindow = this;
     }
 }

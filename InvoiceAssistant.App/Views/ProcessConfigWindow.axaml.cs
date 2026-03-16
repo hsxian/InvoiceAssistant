@@ -33,7 +33,7 @@ public partial class ProcessConfigWindow : Window
         base.OnDataContextChanged(e);
         if (DataContext is ProcessConfigViewModel viewModel)
         {
-            viewModel.Window = this;
+            viewModel.ViewWindow = this;
             viewModel.SelectionBoxesChanged += ViewModel_SelectionBoxesChanged;
             _viewModel = viewModel;
         }

@@ -26,9 +26,10 @@
         <TextBlock Text="位置" />
 
         <StackPanel Orientation="Horizontal">
-            <ToggleSwitch IsChecked="{Binding ScaleOrAbsolutePosition}" OnContent="按比例" OffContent="按绝对位置" Margin="0,0,10,0"
-                          Command="{Binding $parent[Window].((uivm:ProcessConfigViewModel)DataContext).SwitchValueByScaleOrAbsoluteCommand}" 
-                          CommandParameter="{Binding $parent[UserControl].((vm:ExtractMetadata)DataContext)}"/>
+            <ToggleSwitch IsChecked="{Binding ScaleOrAbsolutePosition}" OnContent="按比例" OffContent="按绝对位置"
+                          Margin="0,0,10,0"
+                          Command="{Binding $parent[Window].((uivm:ProcessConfigViewModel)DataContext).SwitchValueByScaleOrAbsoluteCommand}"
+                          CommandParameter="{Binding $parent[UserControl].((vm:ExtractMetadata)DataContext)}" />
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="左:" VerticalAlignment="Center" />
                 <TextBox Text="{Binding Left, Mode=TwoWay, StringFormat={}{0:F3}}" />
@@ -49,23 +50,21 @@
 
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="正则表达式映射: " VerticalAlignment="Center" />
-            <Button Content="添加映射" Margin="0,0,10,0" Command="{Binding $parent[Window].((uivm:ProcessConfigViewModel)DataContext).AddRegexMapCommand}"
-                CommandParameter="{Binding $parent[UserControl].((vm:ExtractMetadata)DataContext)}" />
-            <Button Content="删除映射" Margin="0,0,10,0" Command="{Binding $parent[Window].((uivm:ProcessConfigViewModel)DataContext).RemoveRegexMapCommand}" 
-                CommandParameter="{Binding $parent[UserControl].((vm:ExtractMetadata)DataContext)}"/>
         </StackPanel>
 
         <StackPanel>
             <ListBox ItemsSource="{Binding RegexMapToProperties}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Grid ColumnDefinitions="auto,*,auto,*,auto,*" ColumnSpacing="10" Margin="0">
+                        <Grid ColumnDefinitions="auto,auto,auto,*,auto,*,auto" ColumnSpacing="10" Margin="0">
                             <TextBlock Text="组索引: " VerticalAlignment="Center" />
                             <TextBox Grid.Column="1" Text="{Binding GroupsIndex}" />
                             <TextBlock Grid.Column="2" Text="属性名: " VerticalAlignment="Center" />
                             <!-- <TextBox Grid.Column="3" Text="{Binding PropertyName}" /> -->
-                            <ComboBox Grid.Column="3" ItemsSource="{Binding $parent[Window].((uivm:ProcessConfigViewModel)DataContext).InvoiceInfoPeopertyOptions}" SelectedValueBinding="{Binding Value}"
-                              SelectedValue="{Binding PropertyName, Mode=TwoWay}">
+                            <ComboBox Grid.Column="3"
+                                      ItemsSource="{Binding $parent[Window].((uivm:ProcessConfigViewModel)DataContext).InvoiceInfoPeopertyOptions}"
+                                      SelectedValueBinding="{Binding Value}"
+                                      SelectedValue="{Binding PropertyName, Mode=TwoWay}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Label}" />
@@ -74,12 +73,16 @@
                             </ComboBox>
                             <TextBlock Grid.Column="4" Text="格式化: " VerticalAlignment="Center" />
                             <TextBox Grid.Column="5" Text="{Binding Format}" />
-                            <!-- <Button Content="删除" Command="{Binding $parent[ListBox].((vm:ExtractMetadata)DataContext).RemoveRegexMapCommand}" CommandParameter="{Binding}"/> -->
+                            <Button Grid.Column="6" Content="删除" Margin="0,0,10,0"
+                                    Command="{Binding $parent[Window].((uivm:ProcessConfigViewModel)DataContext).RemoveRegexMapCommand}"
+                                    CommandParameter="{Binding }" />
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <!-- <Button Content="添加映射" Command="{Binding AddRegexMapCommand}" Margin="0,10,0,0"/> -->
+            <Button Content="添加映射" Margin="0,0,10,0"
+                    Command="{Binding $parent[Window].((uivm:ProcessConfigViewModel)DataContext).AddRegexMapCommand}"
+                    CommandParameter="{Binding $parent[UserControl].((vm:ExtractMetadata)DataContext)}" />
         </StackPanel>
     </StackPanel>
 </UserControl>

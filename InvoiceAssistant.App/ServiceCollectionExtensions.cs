@@ -17,5 +17,6 @@ public static class ServiceCollectionExtensions
         });
         collection.AddTransient<MainWindowViewModel>();
         collection.AddTransient<ProcessConfigViewModel>();
+        collection.AddSingleton<ILoggerProvider, CustomLoggerProvider>();
     }
 }

@@ -36,24 +36,28 @@ public partial class ProcessConfigViewModel : ViewModelBase
     [ObservableProperty]
     private ObservableCollection<EnumOptions.ProcessTypeOption> _processTypeOptions =
         new(EnumOptions.ProcessTypeOptions);
+
     [ObservableProperty]
     private ObservableCollection<EnumOptions.InvoiceInfoPeopertyOption> _invoiceInfoPeopertyOptions =
         new(EnumOptions.InvoiceInfoPeopertyOptions);
+
     public event EventHandler<IEnumerable<SelectionBox>>? SelectionBoxesChanged;
-    public ProcessConfigWindow Window { get; set; }
+    public ProcessConfigWindow ViewWindow { get; set; }
     private readonly IInfoExtractAssembly _infoExtractAssembly;
     private readonly IPdfProcessor _pdfProcessor;
+
     public ProcessConfigViewModel(IInfoExtractAssembly infoExtractAssembly, IPdfProcessor pdfProcessor)
     {
         _infoExtractAssembly = infoExtractAssembly;
         _pdfProcessor = pdfProcessor;
     }
+
     [RelayCommand]
     public async Task OpenImage()
     {
         try
         {
-            var topLevel = TopLevel.GetTopLevel(Window)!;
+            var topLevel = TopLevel.GetTopLevel(ViewWindow)!;
 
             var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
             {
@@ -108,6 +112,7 @@ public partial class ProcessConfigViewModel : ViewModelBase
 
         SelectionBoxesChanged?.Invoke(this, boxs);
     }
+
     [RelayCommand]
     public async Task SaveConfig()
     {
@@ -115,6 +120,7 @@ public partial class ProcessConfigViewModel : ViewModelBase
         {
             return;
         }
+
         var json = JsonSerializer.Serialize(ProcessConfig, new JsonSerializerOptions
         {
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
@@ -123,6 +129,7 @@ public partial class ProcessConfigViewModel : ViewModelBase
         });
         await File.WriteAllTextAsync(ProcessConfig.FilePath!, json);
     }
+
     [RelayCommand]
     public void SwitchValueByScaleOrAbsolute(ExtractMetadata metadata)
     {
@@ -130,8 +137,10 @@ public partial class ProcessConfigViewModel : ViewModelBase
         {
             return;
         }
+
         metadata.SwitchValueByScaleOrAbsolute((float)DisplayBitmap!.Size.Width, (float)DisplayBitmap!.Size.Height);
     }
+
     [RelayCommand]
     public void AddXractor()
     {
@@ -139,14 +148,16 @@ public partial class ProcessConfigViewModel : ViewModelBase
         {
             return;
         }
+
         var xractor = new ExtractMetadata
         {
             Right = 0.5f,
             Bottom = 0.1f,
         };
-        ProcessConfig.Xtractors!.Add(xractor);
+        ProcessConfig.Xtractors = [.. ProcessConfig.Xtractors ?? [], xractor];
         UpdateSelectionBoxes();
     }
+
     [RelayCommand]
     public void RemoveXractor()
     {
@@ -156,6 +167,7 @@ public partial class ProcessConfigViewModel : ViewModelBase
         }
         // ProcessConfig.Xtractors!.Remove(xractor);
     }
+
     [RelayCommand]
     public void AddRegexMap(ExtractMetadata metadata)
     {
@@ -163,8 +175,10 @@ public partial class ProcessConfigViewModel : ViewModelBase
         {
             return;
         }
+
         metadata.RegexMapToProperties = [.. metadata.RegexMapToProperties ?? [], new RegexMapToPropertyMetadata(1, "")];
     }
+
     [RelayCommand]
     public void RemoveRegexMap(ExtractMetadata metadata)
     {
