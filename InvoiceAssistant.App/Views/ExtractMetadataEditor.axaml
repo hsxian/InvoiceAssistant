@@ -47,7 +47,13 @@
             </StackPanel>
         </StackPanel>
 
-        <TextBlock Text="正则表达式映射" />
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="正则表达式映射: " VerticalAlignment="Center" />
+            <Button Content="添加映射" Margin="0,0,10,0" Command="{Binding $parent[Window].((uivm:ProcessConfigViewModel)DataContext).AddRegexMapCommand}"
+                CommandParameter="{Binding $parent[UserControl].((vm:ExtractMetadata)DataContext)}" />
+            <Button Content="删除映射" Margin="0,0,10,0" Command="{Binding $parent[Window].((uivm:ProcessConfigViewModel)DataContext).RemoveRegexMapCommand}" 
+                CommandParameter="{Binding $parent[UserControl].((vm:ExtractMetadata)DataContext)}"/>
+        </StackPanel>
 
         <StackPanel>
             <ListBox ItemsSource="{Binding RegexMapToProperties}">
@@ -66,7 +72,7 @@
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
-                            <TextBlock Grid.Column="4" Text="格式: " VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="4" Text="格式化: " VerticalAlignment="Center" />
                             <TextBox Grid.Column="5" Text="{Binding Format}" />
                             <!-- <Button Content="删除" Command="{Binding $parent[ListBox].((vm:ExtractMetadata)DataContext).RemoveRegexMapCommand}" CommandParameter="{Binding}"/> -->
                         </Grid>

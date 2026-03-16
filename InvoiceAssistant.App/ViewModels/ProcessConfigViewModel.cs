@@ -132,4 +132,45 @@ public partial class ProcessConfigViewModel : ViewModelBase
         }
         metadata.SwitchValueByScaleOrAbsolute((float)DisplayBitmap!.Size.Width, (float)DisplayBitmap!.Size.Height);
     }
+    [RelayCommand]
+    public void AddXractor()
+    {
+        if (ProcessConfig is null)
+        {
+            return;
+        }
+        var xractor = new ExtractMetadata
+        {
+            Right = 0.5f,
+            Bottom = 0.1f,
+        };
+        ProcessConfig.Xtractors!.Add(xractor);
+        UpdateSelectionBoxes();
+    }
+    [RelayCommand]
+    public void RemoveXractor()
+    {
+        if (ProcessConfig is null)
+        {
+            return;
+        }
+        // ProcessConfig.Xtractors!.Remove(xractor);
+    }
+    [RelayCommand]
+    public void AddRegexMap(ExtractMetadata metadata)
+    {
+        if (ProcessConfig is null)
+        {
+            return;
+        }
+        metadata.RegexMapToProperties = [.. metadata.RegexMapToProperties ?? [], new RegexMapToPropertyMetadata(1, "")];
+    }
+    [RelayCommand]
+    public void RemoveRegexMap(ExtractMetadata metadata)
+    {
+        if (ProcessConfig is null)
+        {
+            return;
+        }
+    }
 }

@@ -76,6 +76,10 @@
 
 
                 <TextBlock Text="提取器信息" FontSize="14" FontWeight="Bold" Margin="0,10,0,5" />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <Button Content="添加提取器" Command="{Binding AddXractorCommand}" Margin="0,0,10,0" />
+                    <Button Content="删除提取器" Command="{Binding RemoveXractorCommand}" Margin="0,0,10,0" />
+                </StackPanel>
                 <ListBox ItemsSource="{Binding ProcessConfig.Xtractors}" Margin="0,0,0,0">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
