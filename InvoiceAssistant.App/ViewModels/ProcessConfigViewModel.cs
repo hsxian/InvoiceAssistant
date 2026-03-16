@@ -36,7 +36,9 @@ public partial class ProcessConfigViewModel : ViewModelBase
     [ObservableProperty]
     private ObservableCollection<EnumOptions.ProcessTypeOption> _processTypeOptions =
         new(EnumOptions.ProcessTypeOptions);
-
+    [ObservableProperty]
+    private ObservableCollection<EnumOptions.InvoiceInfoPeopertyOption> _invoiceInfoPeopertyOptions =
+        new(EnumOptions.InvoiceInfoPeopertyOptions);
     public event EventHandler<IEnumerable<SelectionBox>>? SelectionBoxesChanged;
     public ProcessConfigWindow Window { get; set; }
     private readonly IInfoExtractAssembly _infoExtractAssembly;
