@@ -7,6 +7,7 @@ using InvoiceAssistant.Core.Service.Images;
 using Microsoft.Extensions.Logging;
 using OpenCvSharp;
 using SkiaSharp;
+using System.Runtime.InteropServices;
 
 namespace InvoiceAssistant.Core.Service.Processors;
 
@@ -27,13 +28,16 @@ public class PdfProcessor(ILogger<PdfProcessor> logger) : IPdfProcessor
         // 创建 Rasterizer 实例
         using var rasterizer = new GhostscriptRasterizer();
         // 初始化（自动查找系统 gs）
-#if Windows
-        using var stream = File.Open(filePath, FileMode.Open);//Or go with using
-        var lv = GhostscriptVersionInfo.GetLastInstalledVersion(GhostscriptLicense.GPL | GhostscriptLicense.AFPL, GhostscriptLicense.GPL);
-        rasterizer.Open(stream, lv, true);
-#else
-        rasterizer.Open(filePath);
-#endif
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            using var stream = File.Open(filePath, FileMode.Open);//Or go with using
+            var lv = GhostscriptVersionInfo.GetLastInstalledVersion(GhostscriptLicense.GPL | GhostscriptLicense.AFPL, GhostscriptLicense.GPL);
+            rasterizer.Open(stream, lv, true);
+        }
+        else 
+        { 
+            rasterizer.Open(filePath);
+        }
 
         int pageCount = rasterizer.PageCount;
 
