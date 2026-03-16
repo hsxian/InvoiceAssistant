@@ -3,7 +3,6 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using System;
 using System.Collections.Generic;
-using Avalonia.Controls.Primitives;
 using InvoiceAssistant.App.ViewModels;
 using InvoiceAssistant.App.Models;
 

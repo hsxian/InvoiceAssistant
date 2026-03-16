@@ -1,14 +1,17 @@
 using System.Drawing;
+using System.ComponentModel;
 
 namespace InvoiceAssistant.Core.Data;
 
-public class RegexMapToPropertyMetadata(int groupsIndex, string? propertyName)
+public class RegexMapToPropertyMetadata(int groupsIndex, string? propertyName) : INotifyPropertyChanged
 {
     public int GroupsIndex { get; set; } = groupsIndex;
     public string? PropertyName { get; set; } = propertyName;
     public string? Format { get; set; }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
 }
-public class ExtractMetadata
+public class ExtractMetadata : INotifyPropertyChanged
 {
     public string? RegexPattern { get; set; }
     public float Left { get; set; }
@@ -31,6 +34,8 @@ public class ExtractMetadata
         Right = right;
         Bottom = bottom;
     }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     public void Offset(float x, float y)
     {

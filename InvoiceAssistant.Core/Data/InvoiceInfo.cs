@@ -1,10 +1,11 @@
+using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace InvoiceAssistant.Core.Data;
 
-public class InvoiceInfo
+public class InvoiceInfo : INotifyPropertyChanged
 {
     public string? FilePath { get; set; }
     public string? PersonName { get; set; }
@@ -15,6 +16,8 @@ public class InvoiceInfo
     public DateTime EndTime { get; set; }
     public double TicketPrice { get; set; }
     public bool GroupFlag { get; set; }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     public void SetValue(PropertyInfo[] props, Match match,
        IEnumerable<RegexMapToPropertyMetadata> regexMapToProperties)

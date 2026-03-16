@@ -26,6 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Docnet.Core" Version="2.7.0-alpha.1"/>
+    <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
     <PackageReference Include="Ghostscript.NET" Version="1.3.2"/>
     <PackageReference Include="OpenCvSharp4" Version="4.13.0.20260308"/>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.5"/>
