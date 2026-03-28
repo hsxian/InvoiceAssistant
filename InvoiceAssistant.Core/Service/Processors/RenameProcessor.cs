@@ -1,3 +1,4 @@
+using Ghostscript.NET.PDFA3Converter.ZUGFeRD;
 using InvoiceAssistant.Core.Data;
 using Microsoft.Extensions.Logging;
 
@@ -70,12 +71,18 @@ public class RenameProcessor(ILogger<RenameProcessor> logger) : IRenameProcessor
 
         return filename + en;
     }
-    public void Rename(InvoiceInfo info)
+    public void Rename(InvoiceInfo info, params string[] subDir)
     {
         string filePath = info.FilePath!;
         var dir = Path.GetDirectoryName(filePath);
         var newFn = GetNewFilename(info, true);
-        TryMove(filePath, Path.Combine(dir!, newFn));
+        var array = new List<string>
+        {
+            dir!
+        };
+        array.AddRange(subDir);
+        array.Add(newFn);
+        TryMove(filePath, Path.Combine([.. array]));
     }
     class OrderInvoiceInfo
     {
@@ -87,10 +94,23 @@ public class RenameProcessor(ILogger<RenameProcessor> logger) : IRenameProcessor
         var fs = infos.Where(t => t.GroupFlag).OrderBy(t => t.StartTime).ToList();
         if (fs.Count == 0)
         {
-            foreach (var item in infos)
+            var ts = infos.Select(t => t.StartTime).Where(t => t != DateTime.MinValue).Order().ToList();
+            if (ts.Count == 0)
             {
-                Rename(item);
+                foreach (var item in infos)
+                {
+                    Rename(item);
+                }
             }
+            else
+            {
+                var tf = $"{ts.First():yyyy.MM.dd}-{ts.Last():yyyy.MM.dd}";
+                foreach (var info in infos)
+                {
+                    Rename(info,tf);
+                }
+            }
+
             return;
         }
 
@@ -132,11 +152,12 @@ public class RenameProcessor(ILogger<RenameProcessor> logger) : IRenameProcessor
             var tf = $"{ts.First():yyyy.MM.dd}-{ts.Last():yyyy.MM.dd}";
             foreach (var item in gs)
             {
-                var info = item.Info!;
-                string filePath = info.FilePath!;
-                var dir = Path.GetDirectoryName(filePath);
-                var newFn = GetNewFilename(info, false);
-                TryMove(filePath, Path.Combine(dir!, tf, newFn));
+                Rename(item.Info!,tf);
+                //var info = item.Info!;
+                //string filePath = info.FilePath!;
+                //var dir = Path.GetDirectoryName(filePath);
+                //var newFn = GetNewFilename(info, false);
+                //TryMove(filePath, Path.Combine(dir!, tf, newFn));
             }
         }
     }

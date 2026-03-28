@@ -5,7 +5,7 @@ namespace InvoiceAssistant.Core.Service.Processors;
 public interface IRenameProcessor
 {
     string GetNewFilename(InvoiceInfo info, bool datePrefix);
-    void Rename(InvoiceInfo info);
+    void Rename(InvoiceInfo info, params string[] subDir);
     void TryGroup(IEnumerable<InvoiceInfo> infos);
     void TryMove(string s, string d);
 }
