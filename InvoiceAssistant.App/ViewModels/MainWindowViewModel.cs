@@ -13,6 +13,8 @@ using InvoiceAssistant.Core.Service;
 using InvoiceAssistant.Core.Service.Processors;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
 
 namespace InvoiceAssistant.App.ViewModels;
 
@@ -146,10 +148,21 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 var infos = await _infoExtractAssembly.Extract(rfh, ProcessConfigList);
                 _renameProcessor.TryGroup(infos);
+                //结束弹出提示
+                await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
+                {
+                    var box = MessageBoxManager.GetMessageBoxStandard("提示", "处理完成！", ButtonEnum.Ok);
+                    await box.ShowAsync();
+                });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "处理文件夹{0}时出错", rfh);
+                await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
+               {
+                   var box = MessageBoxManager.GetMessageBoxStandard("提示", $"处理文件夹{rfh}时出错", ButtonEnum.Ok, icon: Icon.Error);
+                   await box.ShowAsync();
+               });
             }
         });
         // _renameProcessor.TryGroup(infos);

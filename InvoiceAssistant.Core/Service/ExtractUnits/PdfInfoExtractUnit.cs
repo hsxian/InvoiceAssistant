@@ -20,6 +20,7 @@ ILogger<PdfInfoExtractUnit> logger
               {
                   return;
               }
+              logger.LogInformation($"{processConfig.Matcher!.RegexPattern} -> [all text]");
               ret = new InvoiceInfo();
               var props = typeof(InvoiceInfo).GetProperties();
               if (processConfig.Xtractors != null)
@@ -29,7 +30,10 @@ ILogger<PdfInfoExtractUnit> logger
                   {
                       var match = Regex.Match(txt, xtractor.RegexPattern!);
                       if (!match.Success) continue;
-                      ret.SetValue(props, match, xtractor.RegexMapToProperties!);
+                      if (false == ret.SetValue(props, match, xtractor.RegexMapToProperties!))
+                      {
+                          logger.LogInformation($"{processConfig.Title} set value failed");
+                      }
                   }
               }
           });
@@ -53,12 +57,12 @@ ILogger<PdfInfoExtractUnit> logger
                 var characters = page.GetCharacters();
 
                 var txt = GetTxtByPdf(characters, page.GetPageWidth(), page.GetPageHeight(), processConfig.Matcher!);
-                logger.LogInformation($"{processConfig.Matcher!.RegexPattern} -> {txt}");
                 var match = Regex.Match(txt, processConfig.Matcher!.RegexPattern!);
                 if (!match.Success)
                 {
                     return;
                 }
+                logger.LogInformation($"{processConfig.Matcher!.RegexPattern} -> {txt}");
                 ret = new InvoiceInfo();
                 var props = typeof(InvoiceInfo).GetProperties();
                 if (processConfig.Xtractors != null)
@@ -70,7 +74,10 @@ ILogger<PdfInfoExtractUnit> logger
                         logger.LogInformation($"{xtractor.RegexPattern} -> {txt}");
                         match = Regex.Match(txt, xtractor.RegexPattern!);
                         if (!match.Success) continue;
-                        ret.SetValue(props, match, xtractor.RegexMapToProperties!);
+                        if (false == ret.SetValue(props, match, xtractor.RegexMapToProperties!))
+                        {
+                            logger.LogInformation($"{processConfig.Title} set value failed");
+                        }
                     }
                 }
             });

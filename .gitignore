@@ -14,6 +14,8 @@ tessdata/
 appsettings.De*.json
 .idea/
 * copy/
+*.html
+*.pdf
 
 # User-specific files
 *.suo

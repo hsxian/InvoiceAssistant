@@ -1,0 +1,44 @@
+{
+  "Title": "财务特殊事项审批",
+  "ProcessValue": "PdfToImageWithTextPosition",
+  "GroupFlag": true,
+  "Matcher": {
+    "RegexPattern": "财务特殊事项审批",
+    "Left": 0.4,
+    "Top": 0.033333335,
+    "Right": 0.6,
+    "Bottom": 0.06666667,
+    "ScaleOrAbsolutePosition": true,
+    "RegexMapToProperties": null
+  },
+  "Xtractors": [
+    {
+      "RegexPattern": "(.*)",
+      "Left": 0.2,
+      "Top": 0.09,
+      "Right": 0.33333334,
+      "Bottom": 0.112,
+      "ScaleOrAbsolutePosition": true,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "PersonName"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "(\\d{4}/\\d{1,2}/\\d{1,2})",
+      "Left": 0.032,
+      "Top": 0.008,
+      "Right": 0.165,
+      "Bottom": 0.042,
+      "ScaleOrAbsolutePosition": true,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "StartTime"
+        }
+      ]
+    }
+  ]
+}

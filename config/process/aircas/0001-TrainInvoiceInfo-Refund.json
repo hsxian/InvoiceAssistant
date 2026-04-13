@@ -1,0 +1,71 @@
+{
+  "Title": "火车票（退票费）",
+  "GroupFlag": false,
+  "ProcessValue": "PdfWithTextPosition",
+  "Matcher": {
+    "RegexPattern": "铁路.*退票|电子客票.*退票|退票.*铁路|退票.*电子客票",
+    "Left": 0.029,
+    "Top": 0.04,
+    "Right": 0.683,
+    "Bottom": 0.467,
+    "ScaleOrAbsolutePosition": true
+  },
+  "Xtractors": [
+    {
+      "RegexPattern": "^([\\u4e00-\\u9fa5]+)站",
+      "Left": 0.16,
+      "Top": 0.2,
+      "Right": 0.29,
+      "Bottom": 0.26,
+      "ScaleOrAbsolutePosition": true,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "Origin"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "^([\\u4e00-\\u9fa5]+)站",
+      "Left": 0.66,
+      "Top": 0.2,
+      "Right": 0.8,
+      "Bottom": 0.26,
+      "ScaleOrAbsolutePosition": true,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "Destination"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "(\\d{4}年\\d{2}月\\d{2}日\\s*\\d{1,2}:\\d{2})开",
+      "Left": 0.04,
+      "Top": 0.33,
+      "Right": 0.29,
+      "Bottom": 0.37,
+      "ScaleOrAbsolutePosition": true,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "StartTime"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "(\\d+\\.\\d{2})",
+      "Left": 0.04,
+      "Top": 0.41,
+      "Right": 0.26,
+      "Bottom": 0.46,
+      "ScaleOrAbsolutePosition": true,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "TicketPrice"
+        }
+      ]
+    }
+  ]
+}

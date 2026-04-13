@@ -43,11 +43,11 @@ public class TesseractImageInfoExtractUnit(ILogger<TesseractImageInfoExtractUnit
         using var engie = new TesseractEngine("tessdata", "chi_sim", EngineMode.Default);
         InvoiceInfo? ret = null;
         var txt = GetTxtByImg(engie, pix, processConfig.Matcher!);
-        logger.LogInformation($"{processConfig.Matcher!.RegexPattern} -> {txt}");
         if (string.IsNullOrWhiteSpace(txt) || !Regex.Match(txt, processConfig.Matcher!.RegexPattern!).Success)
         {
             return ret;
         }
+        logger.LogInformation($"{processConfig.Matcher!.RegexPattern} -> {txt}");
         ret = new InvoiceInfo();
         var props = typeof(InvoiceInfo).GetProperties();
         if (processConfig.Xtractors != null)
@@ -60,7 +60,10 @@ public class TesseractImageInfoExtractUnit(ILogger<TesseractImageInfoExtractUnit
                 if (string.IsNullOrWhiteSpace(txt)) continue;
                 var match = Regex.Match(txt, xtractor.RegexPattern!);
                 if (!match.Success) continue;
-                ret.SetValue(props, match, xtractor.RegexMapToProperties!);
+                if (false == ret.SetValue(props, match, xtractor.RegexMapToProperties!))
+                {
+                    logger.LogInformation($"{processConfig.Title} set value failed");
+                }
             }
         }
         await Task.CompletedTask;
@@ -98,6 +101,7 @@ public class TesseractImageInfoExtractUnit(ILogger<TesseractImageInfoExtractUnit
         {
             return ret;
         }
+        logger.LogInformation($"{processConfig.Matcher!.RegexPattern} -> [all text]");
         ret = new InvoiceInfo();
         var props = typeof(InvoiceInfo).GetProperties();
         if (processConfig.Xtractors != null)
@@ -107,7 +111,10 @@ public class TesseractImageInfoExtractUnit(ILogger<TesseractImageInfoExtractUnit
             {
                 var match = Regex.Match(txt, xtractor.RegexPattern!);
                 if (!match.Success) continue;
-                ret.SetValue(props, match, xtractor.RegexMapToProperties!);
+                if (false == ret.SetValue(props, match, xtractor.RegexMapToProperties!))
+                {
+                    logger.LogInformation($"{processConfig.Title} set value failed");
+                }
             }
         }
         await Task.CompletedTask;

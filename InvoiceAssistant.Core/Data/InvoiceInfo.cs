@@ -19,14 +19,19 @@ public class InvoiceInfo : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public void SetValue(PropertyInfo[] props, Match match,
+    public bool SetValue(PropertyInfo[] props, Match match,
        IEnumerable<RegexMapToPropertyMetadata> regexMapToProperties)
     {
         foreach (var item in regexMapToProperties!)
         {
-            var prop = props.First(t => t.Name == item.PropertyName);
+            var prop = props.FirstOrDefault(t => t.Name == item.PropertyName);
+            if (prop == null)
+            {
+                return false;
+            }
             SetValue(this, prop, match.Groups[item.GroupsIndex].Value.ReplaceLineEndings().Trim(), item.Format);
         }
+        return true;
     }
     private void SetValue(object obj, PropertyInfo prop, string v, string? f)
     {

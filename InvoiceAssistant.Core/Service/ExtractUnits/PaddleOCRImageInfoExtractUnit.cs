@@ -54,11 +54,11 @@ public class PaddleOCRImageInfoExtractUnit : IImageInfoExtractUnit
         PaddleOcrResult result = paddleOcrAll.Run(mat);
         using Mat subImage = GetSub(mat, processConfig.Matcher!);
         var txt = paddleOcrAll.Run(subImage).Text;
-        logger.LogInformation($"{processConfig.Matcher!.RegexPattern} -> {txt}");
         if (string.IsNullOrWhiteSpace(txt) || !Regex.Match(txt, processConfig.Matcher!.RegexPattern!).Success)
         {
             return ret;
         }
+        logger.LogInformation($"{processConfig.Matcher!.RegexPattern} -> {txt}");
         ret = new InvoiceInfo();
         var props = typeof(InvoiceInfo).GetProperties();
         if (processConfig.Xtractors != null)
@@ -72,7 +72,10 @@ public class PaddleOCRImageInfoExtractUnit : IImageInfoExtractUnit
                 if (string.IsNullOrWhiteSpace(txt)) continue;
                 var match = Regex.Match(txt, xtractor.RegexPattern!);
                 if (!match.Success) continue;
-                ret.SetValue(props, match, xtractor.RegexMapToProperties!);
+                if (false == ret.SetValue(props, match, xtractor.RegexMapToProperties!))
+                {
+                    logger.LogInformation($"{processConfig.Title} set value failed");
+                }
             }
         }
         await Task.CompletedTask;
@@ -97,6 +100,7 @@ public class PaddleOCRImageInfoExtractUnit : IImageInfoExtractUnit
         {
             return ret;
         }
+        logger.LogInformation($"{processConfig.Matcher!.RegexPattern} -> [all text]");
         ret = new InvoiceInfo();
         var props = typeof(InvoiceInfo).GetProperties();
         if (processConfig.Xtractors != null)
@@ -106,7 +110,10 @@ public class PaddleOCRImageInfoExtractUnit : IImageInfoExtractUnit
             {
                 var match = Regex.Match(txt, xtractor.RegexPattern!);
                 if (!match.Success) continue;
-                ret.SetValue(props, match, xtractor.RegexMapToProperties!);
+                if (false == ret.SetValue(props, match, xtractor.RegexMapToProperties!))
+                {
+                    logger.LogInformation($"{processConfig.Title} set value failed");
+                }
             }
         }
         await Task.CompletedTask;
