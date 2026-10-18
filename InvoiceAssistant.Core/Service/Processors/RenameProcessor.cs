@@ -104,6 +104,8 @@ public class RenameProcessor(ILogger<RenameProcessor> logger) : IRenameProcessor
             return;
         }
 
+        CorrectInferredYears(list);
+
         // 1) 优先使用“出差审批单”等锚点（GroupFlag=true）划分行程，保留原设计意图。
         var anchors = list
             .Where(t => t.GroupFlag && t.StartTime != DateTime.MinValue)
@@ -311,6 +313,7 @@ public class RenameProcessor(ILogger<RenameProcessor> logger) : IRenameProcessor
 
     private static int NearestRange(List<(DateTime Start, DateTime End)> ranges, DateTime d)
     {
+        const double maxGapDays = MaxAbsorbGapDays;
         var best = -1;
         var bestGap = double.MaxValue;
         for (var i = 0; i < ranges.Count; i++)
@@ -326,7 +329,68 @@ public class RenameProcessor(ILogger<RenameProcessor> logger) : IRenameProcessor
                 best = i;
             }
         }
-        return best;
+        // 间隔太远的不并入：没有间隔上限时，一个无锚点的旧行程会被“就近”
+        // 吸进几个月后的锚点组里（实测 2025.12 的行程被并进 2026.04 组）
+        return bestGap <= maxGapDays ? best : -1;
+    }
+
+    /// <summary>无锚点单据并入最近行程的最大间隔（天），超过则单独成组。</summary>
+    private const double MaxAbsorbGapDays = 45;
+
+    /// <summary>
+    /// 修正“日期里没有年份”的单据：ParseExact 会拿当前年补齐，
+    /// 处理历史单据时几乎必然错（实测截图里的“12月27号”被推断成 2026-12-27）。
+    /// 这里在候选年份 {当前年-1, 当前年, 当前年+1} 里选与同批其他单据日期最接近的那一年；
+    /// 批内没有其他有日期的单据时不动。
+    /// </summary>
+    private static void CorrectInferredYears(List<InvoiceInfo> list)
+    {
+        var fixedDates = list
+            .Where(t => !t.DateYearInferred && t.StartTime != DateTime.MinValue)
+            .Select(t => t.StartTime)
+            .ToList();
+        if (fixedDates.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var info in list.Where(t => t.DateYearInferred && t.StartTime != DateTime.MinValue))
+        {
+            var baseYear = info.StartTime.Year;
+            var bestYear = baseYear;
+            var bestGap = double.MaxValue;
+            for (var y = baseYear - 1; y <= baseYear + 1; y++)
+            {
+                DateTime candidate;
+                try
+                {
+                    candidate = info.StartTime.AddYears(y - baseYear);
+                }
+                catch
+                {
+                    continue;
+                }
+                var gap = fixedDates.Min(t => Math.Abs((t - candidate).TotalDays));
+                if (gap < bestGap)
+                {
+                    bestGap = gap;
+                    bestYear = y;
+                }
+            }
+
+            if (bestYear == baseYear)
+            {
+                continue;
+            }
+
+            var delta = bestYear - baseYear;
+            info.StartTime = info.StartTime.AddYears(delta);
+            if (info.EndTime != DateTime.MinValue)
+            {
+                info.EndTime = info.EndTime.AddYears(delta);
+            }
+            info.DateYearInferred = false;
+        }
     }
 
     /// <summary>最后的兜底：按日期间隔聚类（间隔超过 gapDays 天即视为新行程）。</summary>

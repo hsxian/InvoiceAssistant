@@ -24,6 +24,13 @@ public class InvoiceInfo : INotifyPropertyChanged
     [System.Text.Json.Serialization.JsonIgnore]
     public string? ExtractSource { get; set; }
 
+    /// <summary>
+    /// 日期里没有年份（如截图里只写“12月27号”），年份是按当前年补的。
+    /// 批处理结束后会参考同批其他单据的日期把年份修正到最接近的那一年。
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool DateYearInferred { get; set; }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public bool SetValue(PropertyInfo[] props, Match match,
@@ -63,6 +70,12 @@ public class InvoiceInfo : INotifyPropertyChanged
                     ? DateTime.Parse(v, CultureInfo.InvariantCulture)
                     : DateTime.ParseExact(v, f, CultureInfo.InvariantCulture);
                 prop.SetValue(obj, d);
+                // ParseExact 对缺失的成分用“今天”补齐：格式里没有年份时，
+                // 年份其实是当前年猜出来的，记下来等批内修正
+                if (!string.IsNullOrEmpty(f) && !f.Contains('y'))
+                {
+                    ((InvoiceInfo)obj).DateYearInferred = true;
+                }
             }
             return true;
         }

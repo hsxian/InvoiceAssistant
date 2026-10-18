@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using InvoiceAssistant.Core.Data;
 using InvoiceAssistant.Core.Service.Extractors;
 using InvoiceAssistant.Core.Service.Processors;
@@ -77,10 +78,10 @@ public class InfoExtractAssembly(ILogger<InfoExtractAssembly> logger,
         foreach (var item in files)
         {
             index++;
-            if (RenameProcessor.InvoiceOwner != null &&
-            Path.GetFileNameWithoutExtension(item).Contains(RenameProcessor.InvoiceOwner))
+            if (IsProcessedName(item))
             {
-                logger.LogInformation("因文件“{}”包含InvoiceOwner“{}”，视为处理过，将忽略。", item, RenameProcessor.InvoiceOwner);
+                logger.LogInformation("因文件“{}”符合已处理命名（日期-{Owner}-描述），视为处理过，将忽略。",
+                    item, RenameProcessor.InvoiceOwner);
                 continue;
             }
 
@@ -126,6 +127,22 @@ public class InfoExtractAssembly(ILogger<InfoExtractAssembly> logger,
             }
         }
         return ret;
+    }
+
+    /// <summary>
+    /// 只有重命名后的标准格式（yyyy-MM-dd-{Owner}-描述.ext）才算“已处理”。
+    /// 原来的规则是“文件名包含 owner 就跳过”，而 12306 原始票据名里常带乘客姓名，
+    /// 会导致从未处理过的文件被直接忽略（实测 26 份测试数据被跳过 24 份）。
+    /// </summary>
+    private static bool IsProcessedName(string path)
+    {
+        if (RenameProcessor.InvoiceOwner == null)
+        {
+            return false;
+        }
+        var name = Path.GetFileNameWithoutExtension(path);
+        var pattern = @"^\d{4}-\d{2}-\d{2}-" + Regex.Escape(RenameProcessor.InvoiceOwner) + "-";
+        return Regex.IsMatch(name, pattern);
     }
 
     private async Task<(InvoiceInfo? Info, ProcessConfig? Cfg)> Match(

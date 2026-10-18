@@ -1,0 +1,74 @@
+{
+ "Title": "出差审批单",
+ "ProcessValue": "PdfToImageWithTextPosition",
+ "GroupFlag": true,
+ "Matcher": {
+  "RegexPattern": "出差\\s*审批\\s*单",
+  "Left": 0.3,
+  "Top": 0.02,
+  "Right": 0.7,
+  "Bottom": 0.075,
+  "ScaleOrAbsolutePosition": true,
+  "RegexMapToProperties": null
+ },
+ "Xtractors": [
+  {
+   "RegexPattern": "([\\u4e00-\\u9fa5]{2,4})",
+   "Left": 0.16,
+   "Top": 0.088,
+   "Right": 0.36,
+   "Bottom": 0.14,
+   "ScaleOrAbsolutePosition": true,
+   "RegexMapToProperties": [
+    {
+     "GroupsIndex": 1,
+     "PropertyName": "PersonName"
+    }
+   ]
+  },
+  {
+   "RegexPattern": "(\\d{4}-\\d{2}-\\d{2})",
+   "Left": 0.16,
+   "Top": 0.425,
+   "Right": 0.4,
+   "Bottom": 0.475,
+   "ScaleOrAbsolutePosition": true,
+   "RegexMapToProperties": [
+    {
+     "GroupsIndex": 1,
+     "PropertyName": "StartTime",
+     "Format": "yyyy-MM-dd"
+    }
+   ]
+  },
+  {
+   "RegexPattern": "(\\d{4}-\\d{2}-\\d{2})",
+   "Left": 0.55,
+   "Top": 0.425,
+   "Right": 0.78,
+   "Bottom": 0.475,
+   "ScaleOrAbsolutePosition": true,
+   "RegexMapToProperties": [
+    {
+     "GroupsIndex": 1,
+     "PropertyName": "EndTime",
+     "Format": "yyyy-MM-dd"
+    }
+   ]
+  },
+  {
+   "RegexPattern": "([\\u4e00-\\u9fa5]{2,8})",
+   "Left": 0.45,
+   "Top": 0.475,
+   "Right": 0.65,
+   "Bottom": 0.525,
+   "ScaleOrAbsolutePosition": true,
+   "RegexMapToProperties": [
+    {
+     "GroupsIndex": 1,
+     "PropertyName": "Destination"
+    }
+   ]
+  }
+ ]
+}
