@@ -16,6 +16,7 @@ appsettings.De*.json
 * copy/
 *.html
 *.pdf
+test.json
 
 # User-specific files
 *.suo

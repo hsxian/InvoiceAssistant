@@ -148,6 +148,7 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 var infos = await _infoExtractAssembly.Extract(rfh, ProcessConfigList);
                 _renameProcessor.TryGroup(infos);
+                _logger.LogInformation("处理文件夹{0}完成", rfh);
                 //结束弹出提示
                 await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
                 {

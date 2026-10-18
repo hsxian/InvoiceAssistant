@@ -8,37 +8,59 @@ using Microsoft.Extensions.Logging;
 class MainHostedService(IInfoExtractAssembly infoExtractAssembly,
 IRenameProcessor renameProcessor,
 IConfiguration configuration,
+IHostApplicationLifetime lifetime,
 ILogger<MainHostedService> logger) : IHostedService
 {
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        var pch = ResolvePath(configuration.GetSection("ProcessConfigurationHome").Get<string>());
-        var rfh = ResolvePath(configuration.GetSection("RawFilesHome").Get<string>());
-
-        if (string.IsNullOrWhiteSpace(rfh))
+        try
         {
-            logger.LogError("RawFilesHome 未配置（appsettings.json），无法确定要扫描的目录，已退出。");
-            return;
+            var pch = ResolvePath(configuration.GetSection("ProcessConfigurationHome").Get<string>());
+            var rfh = ResolvePath(configuration.GetSection("RawFilesHome").Get<string>());
+
+            if (string.IsNullOrWhiteSpace(rfh))
+            {
+                logger.LogError("RawFilesHome 未配置（appsettings.json），无法确定要扫描的目录，已退出。");
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(pch) || !Directory.Exists(pch))
+            {
+                logger.LogError("ProcessConfigurationHome 未配置或不存在：{Path}，已退出。", pch);
+                return;
+            }
+
+            infoExtractAssembly.PdfExtensions = configuration.GetSection("PdfExtensions").Get<List<string>>() ?? [".pdf"];
+            infoExtractAssembly.ImageExtensions = configuration.GetSection("ImageExtensions").Get<List<string>>() ?? [".png", ".jpg", ".jpeg"];
+
+            // 空串会让“文件名是否包含 InvoiceOwner”恒为真，从而跳过所有文件；这里统一转为 null
+            var owner = configuration.GetSection("InvoiceOwner").Get<string>();
+            RenameProcessor.InvoiceOwner = string.IsNullOrWhiteSpace(owner) ? null : owner;
+
+            // 抽取策略（可选）：默认“文本层优先，必要时 OCR”
+            ExtractionOptions.EnableTextLayer =
+                configuration.GetSection("EnableTextLayer").Get<bool?>() ?? true;
+            ExtractionOptions.EnableOcrFallback =
+                configuration.GetSection("EnableOcrFallback").Get<bool?>() ?? true;
+            ExtractionOptions.RenderDpi =
+                configuration.GetSection("RenderDpi").Get<int?>() ?? 300;
+
+            logger.LogInformation("配置目录：{ConfigHome}", pch);
+            logger.LogInformation("扫描目录：{RawHome}", rfh);
+            logger.LogInformation("报销人：{Owner}", RenameProcessor.InvoiceOwner);
+            logger.LogInformation("抽取策略：文本层={TextLayer}，OCR 兜底={OcrFallback}，OCR 渲染 {Dpi}dpi",
+                ExtractionOptions.EnableTextLayer, ExtractionOptions.EnableOcrFallback, ExtractionOptions.RenderDpi);
+
+            var configs = await infoExtractAssembly.GetProcessConfigs(pch);
+            logger.LogInformation("已加载 {Count} 份单据识别配置", configs.Count());
+            var infos = await infoExtractAssembly.Extract(rfh, configs);
+            renameProcessor.TryGroup(infos);
+            logger.LogInformation("处理完成，共识别 {Count} 份单据。", infos.Count());
         }
-        if (string.IsNullOrWhiteSpace(pch) || !Directory.Exists(pch))
+        finally
         {
-            logger.LogError("ProcessConfigurationHome 未配置或不存在：{Path}，已退出。", pch);
-            return;
+            // 这是一次性批处理任务，跑完即退出，不必再手动 Ctrl+C
+            _ = Task.Run(lifetime.StopApplication);
         }
-
-        infoExtractAssembly.PdfExtensions = configuration.GetSection("PdfExtensions").Get<List<string>>() ?? [".pdf"];
-        infoExtractAssembly.ImageExtensions = configuration.GetSection("ImageExtensions").Get<List<string>>() ?? [".png", ".jpg", ".jpeg"];
-        RenameProcessor.InvoiceOwner = configuration.GetSection("InvoiceOwner").Get<string>() ?? string.Empty;
-
-        logger.LogInformation("配置目录：{ConfigHome}", pch);
-        logger.LogInformation("扫描目录：{RawHome}", rfh);
-        logger.LogInformation("报销人：{Owner}", RenameProcessor.InvoiceOwner);
-
-        var configs = await infoExtractAssembly.GetProcessConfigs(pch);
-        logger.LogInformation("已加载 {Count} 份单据识别配置", configs.Count());
-        var infos = await infoExtractAssembly.Extract(rfh, configs);
-        renameProcessor.TryGroup(infos);
-        logger.LogInformation("处理完成，共识别 {Count} 份单据。", infos.Count());
     }
 
     private static string? ResolvePath(string? raw)
