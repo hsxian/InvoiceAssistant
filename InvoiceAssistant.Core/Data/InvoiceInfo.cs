@@ -17,6 +17,13 @@ public class InvoiceInfo : INotifyPropertyChanged
     public double TicketPrice { get; set; }
     public bool GroupFlag { get; set; }
 
+    /// <summary>
+    /// 这条结果从哪条路径来的：text（PDF 文本层）/ ocr（渲染成图后识别）/ image。
+    /// 仅用于诊断与日志，不参与业务逻辑。
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? ExtractSource { get; set; }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public bool SetValue(PropertyInfo[] props, Match match,
@@ -30,7 +37,7 @@ public class InvoiceInfo : INotifyPropertyChanged
             {
                 return false;
             }
-            if (!TrySetValue(this, prop, match.Groups[item.GroupsIndex].Value.ReplaceLineEndings().Trim(), item.Format))
+            if (!TrySetValue(this, prop, match.Groups[item.GroupsIndex].Value.ReplaceLineEndings("").Trim(), item.Format))
             {
                 // 单个字段解析失败不应中断整批，交由调用方记录 "set value failed"
                 allOk = false;

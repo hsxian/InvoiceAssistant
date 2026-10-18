@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using InvoiceAssistant.Core.Data;
 using InvoiceAssistant.Core.Service.Extractors;
@@ -41,64 +42,107 @@ public class InfoExtractAssembly(ILogger<InfoExtractAssembly> logger,
         }
         return ret;
     }
+
+    /// <summary>
+    /// 预先把“配置 -> 抽取器”配对好。原实现对每个文件、每份配置都做一次线性查找，
+    /// 配置多时这层查找本身也是可观开销。
+    /// </summary>
+    private static List<(ProcessConfig Cfg, IInfoExtractor Ex)> BuildPairs(
+        IEnumerable<ProcessConfig> cfgs, IEnumerable<IInfoExtractor> extractors)
+    {
+        var list = new List<(ProcessConfig, IInfoExtractor)>();
+        var byType = extractors.GroupBy(t => t.ProcessType).ToDictionary(g => g.Key, g => g.First());
+        foreach (var cfg in cfgs)
+        {
+            if (byType.TryGetValue(cfg.ProcessValue, out var ex))
+            {
+                list.Add((cfg, ex));
+            }
+        }
+        return list;
+    }
+
     public async Task<IEnumerable<InvoiceInfo>> Extract(string dir, IEnumerable<ProcessConfig> cfgs)
     {
-        var files = Directory.EnumerateFiles(dir);
-        var extractors = serviceProvider.GetServices<IInfoExtractor>();
+        var files = Directory.EnumerateFiles(dir).ToList();
+        var extractors = serviceProvider.GetServices<IInfoExtractor>().ToList();
         var imgs = extractors.Where(t => t.GetType().Name.StartsWith("Image")).ToList();
         var pdfs = extractors.Where(t => t.GetType().Name.StartsWith("Pdf")).ToList();
+
+        var imgPairs = BuildPairs(cfgs, imgs);
+        var pdfPairs = BuildPairs(cfgs, pdfs);
+
         List<InvoiceInfo> ret = [];
+        var index = 0;
         foreach (var item in files)
         {
-            logger.LogInformation("开始处理：{}", item);
+            index++;
             if (RenameProcessor.InvoiceOwner != null &&
             Path.GetFileNameWithoutExtension(item).Contains(RenameProcessor.InvoiceOwner))
             {
                 logger.LogInformation("因文件“{}”包含InvoiceOwner“{}”，视为处理过，将忽略。", item, RenameProcessor.InvoiceOwner);
                 continue;
             }
-            InvoiceInfo? info = null;
+
+            List<(ProcessConfig Cfg, IInfoExtractor Ex)> pairs;
             var lc = item.ToLower();
             if (ImageExtensions.Any(lc.EndsWith))
             {
-                info = await Match(item, imgs, cfgs);
+                pairs = imgPairs;
             }
             else if (PdfExtensions.Any(lc.EndsWith))
             {
-                info = await Match(item, pdfs, cfgs);
+                pairs = pdfPairs;
             }
             else
             {
-                logger.LogInformation("跳过处理：{}", item);
+                logger.LogDebug("跳过处理：{}", item);
                 continue;
             }
-            logger.LogInformation("结束处理：{}", item);
+
+            if (pairs.Count == 0)
+            {
+                logger.LogDebug("没有可用于“{}”的抽取器，跳过。", item);
+                continue;
+            }
+
+            var sw = Stopwatch.StartNew();
+            logger.LogDebug("[{Index}/{Total}] 开始处理：{File}", index, files.Count, item);
+            var (info, cfg) = await Match(item, pairs);
+            sw.Stop();
+
             if (info != null)
             {
                 info.FilePath = item;
                 ret.Add(info);
+                logger.LogInformation("[{Index}/{Total}] {Elapsed,6} ms  {File}  →  {Result}",
+                    index, files.Count, sw.ElapsedMilliseconds, Path.GetFileName(item),
+                    PdfHybridExtraction.Describe(info, cfg!));
+            }
+            else
+            {
+                logger.LogWarning("[{Index}/{Total}] {Elapsed,6} ms  {File}  →  未识别（{Count} 份配置均未命中）",
+                    index, files.Count, sw.ElapsedMilliseconds, Path.GetFileName(item), pairs.Count);
             }
         }
         return ret;
     }
-    async Task<InvoiceInfo?> Match(string fp, IEnumerable<IInfoExtractor> extractors, IEnumerable<ProcessConfig> configs)
+
+    private async Task<(InvoiceInfo? Info, ProcessConfig? Cfg)> Match(
+        string fp, List<(ProcessConfig Cfg, IInfoExtractor Ex)> pairs)
     {
-
-        foreach (var config in configs)
+        foreach (var (cfg, ex) in pairs)
         {
-            var extractor = extractors.FirstOrDefault(t => t.ProcessType == config.ProcessValue);
-            if (extractor == null)
-            {
-                // logger.LogWarning("配置{}未找到执行者{}", config.Title, config.ProcessValue);
-                continue;
-            }
-            var ret = await extractor.GetInfo(fp, config);
+            var ret = await ex.GetInfo(fp, cfg);
             if (ret != null)
-                return ret;
+            {
+                ret.ExtractSource ??= ex.ProcessType.ToString();
+                return (ret, cfg);
+            }
         }
-
-        return null;
+        return (null, null);
     }
+
     public void Dispose()
     {
     }

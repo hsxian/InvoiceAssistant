@@ -3,10 +3,16 @@ using System.ComponentModel;
 
 namespace InvoiceAssistant.Core.Data;
 
-public class RegexMapToPropertyMetadata(int groupsIndex, string? propertyName) : INotifyPropertyChanged
+public class RegexMapToPropertyMetadata : INotifyPropertyChanged
 {
-    public int GroupsIndex { get; set; } = groupsIndex;
-    public string? PropertyName { get; set; } = propertyName;
+    public RegexMapToPropertyMetadata() { }
+    public RegexMapToPropertyMetadata(int groupsIndex, string? propertyName)
+    {
+        GroupsIndex = groupsIndex;
+        PropertyName = propertyName;
+    }
+    public int GroupsIndex { get; set; }
+    public string? PropertyName { get; set; } 
     public string? Format { get; set; }
 
     public event PropertyChangedEventHandler? PropertyChanged;
