@@ -3,21 +3,21 @@
   "ProcessValue": "PdfToImageWithTextPosition",
   "GroupFlag": true,
   "Matcher": {
-    "RegexPattern": "出差审批单",
-    "Left": 0.4,
-    "Top": 0.033333335,
-    "Right": 0.6,
-    "Bottom": 0.06666667,
+    "RegexPattern": "出差\\s*(审批|申请)\\s*单",
+    "Left": 0.38,
+    "Top": 0.042,
+    "Right": 0.62,
+    "Bottom": 0.08,
     "ScaleOrAbsolutePosition": true,
     "RegexMapToProperties": null
   },
   "Xtractors": [
     {
-      "RegexPattern": "(.*)",
-      "Left": 0.2,
-      "Top": 0.1,
-      "Right": 0.33333334,
-      "Bottom": 0.13333334,
+      "RegexPattern": "([\\u4e00-\\u9fa5]{2,4})",
+      "Left": 0.578,
+      "Top": 0.147,
+      "Right": 0.655,
+      "Bottom": 0.17,
       "ScaleOrAbsolutePosition": true,
       "RegexMapToProperties": [
         {
@@ -27,11 +27,31 @@
       ]
     },
     {
-      "RegexPattern": "(.*)",
-      "Left": 0.49579832,
-      "Top": 0.46666667,
-      "Right": 0.6,
-      "Bottom": 0.4918033,
+      "RegexPattern": "(\\d{4}-\\d{2}-\\d{2})\\D{0,8}(\\d{4}-\\d{2}-\\d{2})",
+      "Left": 0.215,
+      "Top": 0.212,
+      "Right": 0.292,
+      "Bottom": 0.262,
+      "ScaleOrAbsolutePosition": true,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "StartTime",
+          "Format": "yyyy-MM-dd"
+        },
+        {
+          "GroupsIndex": 2,
+          "PropertyName": "EndTime",
+          "Format": "yyyy-MM-dd"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "至(.+)$",
+      "Left": 0.29,
+      "Top": 0.215,
+      "Right": 0.38,
+      "Bottom": 0.262,
       "ScaleOrAbsolutePosition": true,
       "RegexMapToProperties": [
         {
@@ -41,30 +61,16 @@
       ]
     },
     {
-      "RegexPattern": "(\\d{4}-\\d{2}-\\d{2})",
-      "Left": 0.2,
-      "Top": 0.43333334,
-      "Right": 0.33333334,
-      "Bottom": 0.46666667,
+      "RegexPattern": "^(.+?)至",
+      "Left": 0.29,
+      "Top": 0.215,
+      "Right": 0.38,
+      "Bottom": 0.262,
       "ScaleOrAbsolutePosition": true,
       "RegexMapToProperties": [
         {
           "GroupsIndex": 1,
-          "PropertyName": "StartTime"
-        }
-      ]
-    },
-    {
-      "RegexPattern": "(\\d{4}-\\d{2}-\\d{2})",
-      "Left": 0.6,
-      "Top": 0.43333334,
-      "Right": 0.8,
-      "Bottom": 0.46666667,
-      "ScaleOrAbsolutePosition": true,
-      "RegexMapToProperties": [
-        {
-          "GroupsIndex": 1,
-          "PropertyName": "EndTime"
+          "PropertyName": "Origin"
         }
       ]
     }

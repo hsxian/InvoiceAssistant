@@ -13,10 +13,10 @@
   },
   "Xtractors": [
     {
-      "RegexPattern": "(.*)",
-      "Left": 0.2,
+      "RegexPattern": "([\\u4e00-\\u9fa5]{2,4})",
+      "Left": 0.19,
       "Top": 0.09,
-      "Right": 0.33333334,
+      "Right": 0.33,
       "Bottom": 0.112,
       "ScaleOrAbsolutePosition": true,
       "RegexMapToProperties": [
@@ -27,16 +27,17 @@
       ]
     },
     {
-      "RegexPattern": "(\\d{4}/\\d{1,2}/\\d{1,2})",
-      "Left": 0.032,
-      "Top": 0.008,
-      "Right": 0.165,
-      "Bottom": 0.042,
+      "RegexPattern": "(\\d{4}\\.\\d{1,2}\\.\\d{1,2})",
+      "Left": 0.1,
+      "Top": 0.248,
+      "Right": 0.95,
+      "Bottom": 0.268,
       "ScaleOrAbsolutePosition": true,
       "RegexMapToProperties": [
         {
           "GroupsIndex": 1,
-          "PropertyName": "StartTime"
+          "PropertyName": "StartTime",
+          "Format": "yyyy.M.d"
         }
       ]
     }
