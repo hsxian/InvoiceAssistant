@@ -61,7 +61,9 @@
             </Grid>
             <Border Grid.Column="1" Margin="10" BorderBrush="Black" BorderThickness="1">
                 <ScrollViewer>
-                    <TextBlock Text="{Binding ProcessResult}" TextWrapping="Wrap" />
+                    <!-- SelectableTextBlock = 只读但可选中复制（Ctrl+C / 右键复制），
+                         替代 TextBlock：后者无法选中文字，日志只能看不能拷 -->
+                    <SelectableTextBlock Text="{Binding ProcessResult}" TextWrapping="Wrap" />
                 </ScrollViewer>
             </Border>
         </Grid>
