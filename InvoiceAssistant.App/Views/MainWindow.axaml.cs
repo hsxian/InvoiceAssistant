@@ -1,11 +1,12 @@
 using System;
 using Avalonia.Controls;
-using Avalonia.ReactiveUI;
 using InvoiceAssistant.App.ViewModels;
 
 namespace InvoiceAssistant.App.Views;
 
-public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
+// Avalonia 12 不再提供 Avalonia.ReactiveUI 附属包；
+// 本项目 VM 基于 CommunityToolkit.Mvvm，ReactiveWindow 从未被真正用到，改回普通 Window
+public partial class MainWindow : Window
 {
     public MainWindow()
     {
@@ -17,7 +18,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     protected override void OnDataContextChanged(EventArgs e)
     {
         base.OnDataContextChanged(e);
-        if (ViewModel != null)
-            ViewModel.ViewWindow = this;
+        if (DataContext is MainWindowViewModel vm)
+            vm.ViewWindow = this;
     }
 }

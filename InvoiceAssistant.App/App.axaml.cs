@@ -18,9 +18,8 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        // Line below is needed to remove Avalonia data validation.
-        // Without this line you will get duplicate validations from both Avalonia and CT
-        BindingPlugins.DataValidators.RemoveAt(0);
+        // Avalonia 12 移除了公开的 BindingPlugins（数据校验插件机制重做）；
+        // 原来这里 RemoveAt(0) 去重 Avalonia 与 CommunityToolkit 的校验，12 下无需处理
 
         var collection = new ServiceCollection();
         collection.ConfigInvoiceAssistantCore();
