@@ -65,6 +65,10 @@ public class InfoExtractAssembly(ILogger<InfoExtractAssembly> logger,
 
     public async Task<IEnumerable<InvoiceInfo>> Extract(string dir, IEnumerable<ProcessConfig> cfgs)
     {
+        // OCR 依赖 OpenCV 原生库，先预加载发布包 lib/ 下的 .so，
+        // 使不经 run.sh/run-gui.sh 直接启动二进制也能正常走 OCR
+        NativeLibPreloader.Preload(logger);
+
         var files = Directory.EnumerateFiles(dir).ToList();
         var extractors = serviceProvider.GetServices<IInfoExtractor>().ToList();
         var imgs = extractors.Where(t => t.GetType().Name.StartsWith("Image")).ToList();
