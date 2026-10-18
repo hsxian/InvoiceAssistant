@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    空壳程序集：只为了让 Sdcb.PaddleOCR.Models.Local 里的 Utils.LocalModel 能通过 JIT。
+    该方法用类型切换选择模型所在程序集（typeof(KnownModels) 三处），即使只走 V5 分支，
+    JIT 编译整个方法体也要把 V3/V4 的 KnownModels 类型解析出来，
+    所以产物里必须“有”这两个程序集（真实体 245MB，这里只要一个类型声明）。
+    构建脚本会用它覆盖发布目录里的真包，仅用于缩小发布体积。
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyVersion>2.7.0.1</AssemblyVersion>
+    <FileVersion>2.7.0.1</FileVersion>
+    <Version>2.7.0.1</Version>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+</Project>
