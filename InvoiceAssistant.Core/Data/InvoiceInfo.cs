@@ -22,6 +22,7 @@ public class InvoiceInfo : INotifyPropertyChanged
     public bool SetValue(PropertyInfo[] props, Match match,
        IEnumerable<RegexMapToPropertyMetadata> regexMapToProperties)
     {
+        bool allOk = true;
         foreach (var item in regexMapToProperties!)
         {
             var prop = props.FirstOrDefault(t => t.Name == item.PropertyName);
@@ -29,27 +30,39 @@ public class InvoiceInfo : INotifyPropertyChanged
             {
                 return false;
             }
-            SetValue(this, prop, match.Groups[item.GroupsIndex].Value.ReplaceLineEndings().Trim(), item.Format);
+            if (!TrySetValue(this, prop, match.Groups[item.GroupsIndex].Value.ReplaceLineEndings().Trim(), item.Format))
+            {
+                // 单个字段解析失败不应中断整批，交由调用方记录 "set value failed"
+                allOk = false;
+            }
         }
-        return true;
+        return allOk;
     }
-    private void SetValue(object obj, PropertyInfo prop, string v, string? f)
+    private bool TrySetValue(object obj, PropertyInfo prop, string v, string? f)
     {
-        if (prop.PropertyType == typeof(string))
+        try
         {
-            prop.SetValue(obj, v);
+            if (prop.PropertyType == typeof(string))
+            {
+                prop.SetValue(obj, v);
+            }
+            else if (prop.PropertyType == typeof(double))
+            {
+                prop.SetValue(obj, double.Parse(v, CultureInfo.InvariantCulture));
+            }
+            else if (prop.PropertyType == typeof(DateTime))
+            {
+                var d = string.IsNullOrWhiteSpace(f)
+                    ? DateTime.Parse(v, CultureInfo.InvariantCulture)
+                    : DateTime.ParseExact(v, f, CultureInfo.InvariantCulture);
+                prop.SetValue(obj, d);
+            }
+            return true;
         }
-        else if (prop.PropertyType == typeof(double))
+        catch
         {
-            var d = double.Parse(v);
-            prop.SetValue(obj, d);
-        }
-        else if (prop.PropertyType == typeof(DateTime))
-        {
-            var d = string.IsNullOrWhiteSpace(f) ?
-             DateTime.Parse(v) :
-            DateTime.ParseExact(v, f, CultureInfo.InvariantCulture);
-            prop.SetValue(obj, d);
+            // OCR 抽到脏数据时跳过该字段，保持默认（DateTime.MinValue / 0）
+            return false;
         }
     }
 }

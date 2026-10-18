@@ -12,7 +12,7 @@ public class TesseractImageInfoExtractUnit(ILogger<TesseractImageInfoExtractUnit
 {
     public void Dispose()
     {
-        throw new NotImplementedException();
+        // 引擎为每次调用按需创建，此处无需释放资源
     }
     private string? GetTxtByImg(TesseractEngine engie, Pix pix, ExtractMetadata metadata)
     {

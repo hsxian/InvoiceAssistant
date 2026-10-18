@@ -3,25 +3,49 @@ using InvoiceAssistant.Core.Service;
 using InvoiceAssistant.Core.Service.Processors;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 class MainHostedService(IInfoExtractAssembly infoExtractAssembly,
 IRenameProcessor renameProcessor,
-IConfiguration configuration) : IHostedService
+IConfiguration configuration,
+ILogger<MainHostedService> logger) : IHostedService
 {
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        var pch = configuration.GetSection("ProcessConfigurationHome").Get<string>()!;
-        var rfh = configuration.GetSection("RawFilesHome").Get<string>()!;
-        infoExtractAssembly.PdfExtensions = configuration.GetSection("PdfExtensions").Get<List<string>>()!;
-        infoExtractAssembly.ImageExtensions = configuration.GetSection("ImageExtensions").Get<List<string>>()!;
-        RenameProcessor.InvoiceOwner = configuration.GetSection("InvoiceOwner").Get<string>()!;
+        var pch = ResolvePath(configuration.GetSection("ProcessConfigurationHome").Get<string>());
+        var rfh = ResolvePath(configuration.GetSection("RawFilesHome").Get<string>());
+
+        if (string.IsNullOrWhiteSpace(rfh))
+        {
+            logger.LogError("RawFilesHome 未配置（appsettings.json），无法确定要扫描的目录，已退出。");
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(pch) || !Directory.Exists(pch))
+        {
+            logger.LogError("ProcessConfigurationHome 未配置或不存在：{Path}，已退出。", pch);
+            return;
+        }
+
+        infoExtractAssembly.PdfExtensions = configuration.GetSection("PdfExtensions").Get<List<string>>() ?? [".pdf"];
+        infoExtractAssembly.ImageExtensions = configuration.GetSection("ImageExtensions").Get<List<string>>() ?? [".png", ".jpg", ".jpeg"];
+        RenameProcessor.InvoiceOwner = configuration.GetSection("InvoiceOwner").Get<string>() ?? string.Empty;
+
+        logger.LogInformation("配置目录：{ConfigHome}", pch);
+        logger.LogInformation("扫描目录：{RawHome}", rfh);
+        logger.LogInformation("报销人：{Owner}", RenameProcessor.InvoiceOwner);
+
         var configs = await infoExtractAssembly.GetProcessConfigs(pch);
+        logger.LogInformation("已加载 {Count} 份单据识别配置", configs.Count());
         var infos = await infoExtractAssembly.Extract(rfh, configs);
         renameProcessor.TryGroup(infos);
-        // foreach (var item in infos)
-        // {
-        //     renameProcessor.Rename(item);
-        // }
+        logger.LogInformation("处理完成，共识别 {Count} 份单据。", infos.Count());
+    }
+
+    private static string? ResolvePath(string? raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw)) return raw;
+        // 相对路径按程序基目录解析，便于 dotnet run 时直接可用
+        return Path.IsPathRooted(raw) ? raw : Path.Combine(AppContext.BaseDirectory, raw);
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)
