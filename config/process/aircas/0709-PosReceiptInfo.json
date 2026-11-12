@@ -1,0 +1,58 @@
+{
+  "Title": "POS小票",
+  "GroupFlag": false,
+  "ProcessValue": "ImageOnlyText",
+  "Matcher": {
+    "RegexPattern": "(签购单|银联商务|UnionPay)[\\s\\S]*(AMOUNT|金额)",
+    "Left": 0,
+    "Top": 0,
+    "Right": 0,
+    "Bottom": 0,
+    "ScaleOrAbsolutePosition": true,
+    "RegexMapToProperties": null
+  },
+  "Xtractors": [
+    {
+      "RegexPattern": "(?:交易)?金额[^0-9]{0,16}?([0-9][0-9,]*\\.[0-9]{2})(?![0-9])",
+      "Left": 0,
+      "Top": 0,
+      "Right": 0,
+      "Bottom": 0,
+      "ScaleOrAbsolutePosition": true,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "TicketPrice"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "(?:RMB|CNY|￥|¥)\\s*[:：]?\\s*([0-9][0-9,]*\\.[0-9]{2})(?![0-9])",
+      "Left": 0,
+      "Top": 0,
+      "Right": 0,
+      "Bottom": 0,
+      "ScaleOrAbsolutePosition": true,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "TicketPrice"
+        }
+      ]
+    },
+    {
+      "RegexPattern": "(\\d{4}-\\d{2}-\\d{2})",
+      "Left": 0,
+      "Top": 0,
+      "Right": 0,
+      "Bottom": 0,
+      "ScaleOrAbsolutePosition": true,
+      "RegexMapToProperties": [
+        {
+          "GroupsIndex": 1,
+          "PropertyName": "StartTime"
+        }
+      ]
+    }
+  ]
+}

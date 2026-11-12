@@ -247,3 +247,9 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+
+# 本地项目数据：CodeBuddy 计划/规则等，不入库（文件夹保留）
+.codebuddy/
+
+# 行程分组验证材料：脚本、报告、单据副本与生成基准均不入库
+validation/

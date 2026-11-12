@@ -153,10 +153,12 @@ public class RenameProcessor(ILogger<RenameProcessor> logger) : IRenameProcessor
         {
             bounds.Add((anchors[i].StartTime, anchors[i + 1].StartTime));
         }
+        // 末锚点缺 EndTime 时按 21 天封顶（本批最长行程 17 天 + 余量）：MaxValue 会把之后所有行程吞进这一个区间
+        const int maxAnchorSpanDays = 21;
         var last = anchors[^1];
         var lastEnd = last.EndTime != DateTime.MinValue && last.EndTime > last.StartTime
             ? last.EndTime
-            : DateTime.MaxValue;
+            : last.StartTime.AddDays(maxAnchorSpanDays);
         bounds.Add((last.StartTime, lastEnd));
 
         var groups = bounds.Select(_ => new List<InvoiceInfo>()).ToList();
@@ -191,19 +193,20 @@ public class RenameProcessor(ILogger<RenameProcessor> logger) : IRenameProcessor
             }
         }
 
-        // 未落入任何区间的单据：有日期的按日期就近归入；无日期的按金额匹配，仍不行则单独成组。
-        foreach (var info in leftover)
+        // 未落入任何锚点区间的单据：用“路线/日期”逻辑独立分段，
+        // 而不是按 45 天就近并入最近的锚点——否则会把间隔仅数天、毫无关系的
+        // 后续行程（如 09.07 锚点把 10.07、10.27 两段一并吞并）错误合并成一簇。
+        var datedLeftover = leftover.Where(t => t.StartTime != DateTime.MinValue).ToList();
+        var undatedLeftover = leftover.Where(t => t.StartTime == DateTime.MinValue).ToList();
+        if (datedLeftover.Count > 0)
         {
-            if (info.StartTime != DateTime.MinValue)
-            {
-                var idx = NearestRange(bounds, info.StartTime.Date);
-                if (idx >= 0)
-                {
-                    groups[idx].Add(info);
-                    continue;
-                }
-            }
-            else if (info.TicketPrice != 0)
+            var seg = GroupByRoute(datedLeftover) ?? GroupByDateGap(datedLeftover);
+            groups.AddRange(seg);
+        }
+        // 无日期单据：按金额匹配归入已有组，仍不行则单独成组（保持原行为）。
+        foreach (var info in undatedLeftover)
+        {
+            if (info.TicketPrice != 0)
             {
                 var hit = groups.FirstOrDefault(g => g.Any(x => x.TicketPrice == info.TicketPrice));
                 if (hit != null)
@@ -240,20 +243,24 @@ public class RenameProcessor(ILogger<RenameProcessor> logger) : IRenameProcessor
             return null;
         }
 
+        // 家按最早一张路线票的出发地判定：按时间排序首张必为去程；
+        // 若改用 Origin 众数，后续行程漏抽去程票时返程票的“外地”会反超，把家判反。
         var home = routes[0].Origin!;
 
         var items = new List<List<InvoiceInfo>>();
         var ranges = new List<(DateTime Start, DateTime End)>();
         List<InvoiceInfo>? cur = null;
+        var tripClosed = false;
 
         foreach (var r in routes)
         {
             var outbound = r.Origin == home && r.Destination != home;
-            if (outbound || cur == null)
+            if (outbound || cur == null || tripClosed)
             {
                 cur = [r];
                 items.Add(cur);
                 ranges.Add((r.StartTime, r.StartTime));
+                tripClosed = false;
             }
             else
             {
@@ -262,6 +269,11 @@ public class RenameProcessor(ILogger<RenameProcessor> logger) : IRenameProcessor
                 var range = ranges[idx];
                 ranges[idx] = (range.Start,
                     r.StartTime > range.End ? r.StartTime : range.End);
+            }
+            // 到家即行程结束：缺去程的孤立返程票另起一组，不再追加到上一行程
+            if (r.Destination == home)
+            {
+                tripClosed = true;
             }
         }
 
@@ -329,13 +341,12 @@ public class RenameProcessor(ILogger<RenameProcessor> logger) : IRenameProcessor
                 best = i;
             }
         }
-        // 间隔太远的不并入：没有间隔上限时，一个无锚点的旧行程会被“就近”
-        // 吸进几个月后的锚点组里（实测 2025.12 的行程被并进 2026.04 组）
+        // 间隔太远的不并入：否则一个日期抽错的旧单据会被“就近”吸进几个月后的行程
         return bestGap <= maxGapDays ? best : -1;
     }
 
-    /// <summary>无锚点单据并入最近行程的最大间隔（天），超过则单独成组。</summary>
-    private const double MaxAbsorbGapDays = 45;
+    /// <summary>散票并入最近行程的最大间隔（天），超过则单独成组；收紧到 7 天会误伤行程末尾单据。</summary>
+    private const double MaxAbsorbGapDays = 10;
 
     /// <summary>
     /// 修正“日期里没有年份”的单据：ParseExact 会拿当前年补齐，
